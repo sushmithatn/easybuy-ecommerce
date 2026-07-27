@@ -35,7 +35,9 @@ export default function Products() {
 
   // Fetch Categories
   useEffect(() => {
-    axios.get("http://localhost:8080/api/categories")
+axios.get(
+"https://easybuy-ecommerce-n8y6.onrender.com/api/categories"
+)
       .then(res => setCategories(res.data))
       .catch(err => console.error("Error loading categories:", err));
   }, []);
@@ -51,7 +53,7 @@ export default function Products() {
   const loadProducts = useCallback(() => {
     setLoading(true);
 
-    let url = `http://localhost:8080/api/products?page=${currentPage}&size=12&sortBy=${sortBy}&direction=${sortDir}`;
+let url = `https://easybuy-ecommerce-n8y6.onrender.com/api/products?page=${currentPage}`;
     if (selectedCategory) url += `&categoryId=${selectedCategory}`;
     if (searchQuery) url += `&search=${encodeURIComponent(searchQuery)}`;
     if (priceRange) url += `&maxPrice=${priceRange}`;
