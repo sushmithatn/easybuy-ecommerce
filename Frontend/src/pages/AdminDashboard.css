@@ -1,0 +1,150 @@
+/* ===== Admin Container & Form ===== */
+.admin-container {
+  padding: 25px;
+  background: #f5f7fb;
+}
+
+/* Add / Edit Product Form */
+.add-box {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 30px; /* ✅ space between form and products list */
+}
+
+.add-box input {
+  padding: 8px;
+  flex: 1; /* inputs stretch nicely */
+  border-radius: 6px;
+  border: 1px solid #ccc;
+}
+
+.add-box button {
+  background: #16a34a;
+  color: white;
+  padding: 8px 15px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.add-box button:hover {
+  background: #13803d;
+}
+
+/* ===== Dashboard Top Cards ===== */
+.cards-container {
+  display: flex;
+  justify-content: center; /* center horizontally */
+  gap: 20px;               /* space between cards */
+  flex-wrap: wrap;         /* responsive wrap */
+  margin-bottom: 40px;     /* space below cards */
+}
+
+.admin-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 180px;
+  padding: 20px;
+  border-radius: 10px;
+  background: white;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  text-align: center;
+  transition: transform 0.2s, box-shadow 0.3s;
+}
+
+.admin-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 16px rgba(0,0,0,0.15);
+}
+
+.card-icon {
+  font-size: 30px;
+  margin-bottom: 10px;
+  color: #2563eb;
+}
+
+.admin-card p {
+  margin: 5px 0;
+  font-size: 14px;
+  color: #555;
+}
+
+.admin-card h2 {
+  margin: 5px 0;
+  font-size: 20px;
+  font-weight: bold;
+}
+
+/* ===== Products List Cards ===== */
+.admin-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px; /* space between product cards */
+}
+
+.admin-list .admin-card {
+  width: 220px;
+  padding: 15px;
+  text-align: center;
+}
+
+.admin-list .admin-card img {
+  width: 100%;
+  height: 150px;
+  object-fit: cover;
+  border-radius: 8px;
+  margin-bottom: 10px;
+}
+
+.admin-list .admin-card h4 {
+  margin: 5px 0;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.admin-list .admin-card p {
+  font-size: 14px;
+  color: #555;
+  margin-bottom: 8px;
+  height: 36px; /* fixed height to align cards */
+  overflow: hidden;
+}
+
+.admin-list .admin-card b {
+  font-size: 16px;
+  color: #111;
+  margin-bottom: 10px;
+}
+
+/* Buttons inside product cards */
+.admin-list .admin-card button {
+  padding: 6px 12px;
+  border-radius: 5px;
+  font-size: 12px;
+  cursor: pointer;
+  border: none;
+  margin: 3px 0;
+  transition: 0.3s;
+}
+
+.admin-list .admin-card button:first-child {
+  background: black; /* Edit */
+  color: white;
+}
+
+.admin-list .admin-card button:last-child {
+  background: black; /* Delete */
+  color: white;
+}
+
+/* Small gap between buttons */
+.admin-list .admin-card button + button {
+  margin-left: 5px;
+}
+
+.admin-list .admin-card button:hover {
+  filter: brightness(0.9);
+}

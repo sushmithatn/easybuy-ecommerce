@@ -1,0 +1,66 @@
+.register-container {
+  max-width: 680px;
+}
+
+.input-row-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+/* Password strength checklist */
+.password-checklist {
+  background-color: var(--bg-tertiary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-md);
+  padding: 16px;
+  margin-top: 12px;
+  font-size: 13px;
+}
+
+.checklist-title {
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 8px;
+}
+
+.password-checklist ul {
+  list-style: none;
+}
+
+.password-checklist li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+  font-weight: 500;
+}
+
+.password-checklist li:last-child {
+  margin-bottom: 0;
+}
+
+.password-checklist li.valid {
+  color: var(--success-color);
+}
+
+.password-checklist li.invalid {
+  color: var(--text-secondary);
+}
+
+.check-icon {
+  color: var(--success-color);
+  font-size: 12px;
+}
+
+.cross-icon {
+  color: var(--text-muted);
+  font-size: 10px;
+}
+
+@media (max-width: 580px) {
+  .input-row-grid {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+}
