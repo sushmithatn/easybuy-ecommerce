@@ -1,7 +1,7 @@
 import { useEffect, useState, useCallback } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import axios from "axios";
-import { FaHeart, FaShoppingCart, FaStar, FaEye, FaFilter, FaTimes } from "react-icons/fa";
+import { FaHeart, FaStar, FaEye, FaFilter, FaTimes } from "react-icons/fa";
 import Navbar from "../components/Navbar";
 import "./Products.css";
 
