@@ -68,28 +68,35 @@ public class SecurityConfig {
                 }))
 
                 // Request authorization
-                .authorizeHttpRequests(auth -> auth
-                        // Public Endpoints
-                        .requestMatchers("/api/auth/**", "/images/**").permitAll()
-                        .requestMatchers(org.springframework.http.HttpMethod.GET, "/api/products/**").permitAll()
-                        .requestMatchers(org.springframework.http.HttpMethod.GET, "/api/categories").permitAll()
-                        .requestMatchers(org.springframework.http.HttpMethod.GET, "/api/reviews/product/**").permitAll()
-                        .requestMatchers(org.springframework.http.HttpMethod.GET, "/api/coupons/validate/**").permitAll()
+               .authorizeHttpRequests(auth -> auth
 
-                        // Authenticated User Endpoints
-                        .requestMatchers("/api/users/**").authenticated()
-                        .requestMatchers("/api/cart/**").authenticated()
-                        .requestMatchers("/api/wishlist/**").authenticated()
-                        .requestMatchers("/api/orders/**").authenticated()
-                        .requestMatchers("/api/reviews/**").authenticated()
-                        .requestMatchers("/api/coupons/**").authenticated()
-                        .requestMatchers("/api/categories/**").authenticated()
-                        .requestMatchers("/api/products/**").authenticated()
+        .requestMatchers("/api/auth/**").permitAll()
 
-                        // Any other request
-                        .anyRequest().authenticated()
-                )
+        .requestMatchers(
+                HttpMethod.GET,
+                "/api/products",
+                "/api/products/**"
+        ).permitAll()
 
+        .requestMatchers(
+                HttpMethod.GET,
+                "/api/categories",
+                "/api/categories/**"
+        ).permitAll()
+
+        .requestMatchers("/images/**").permitAll()
+
+
+        .requestMatchers("/api/users/**").authenticated()
+        .requestMatchers("/api/cart/**").authenticated()
+        .requestMatchers("/api/wishlist/**").authenticated()
+        .requestMatchers("/api/orders/**").authenticated()
+        .requestMatchers("/api/reviews/**").authenticated()
+        .requestMatchers("/api/coupons/**").authenticated()
+
+
+        .anyRequest().authenticated()
+)
 
                 // Stateless session (JWT)
                 .sessionManagement(session ->

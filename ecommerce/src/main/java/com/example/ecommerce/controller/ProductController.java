@@ -18,7 +18,12 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/products")
-@CrossOrigin(origins = "http://localhost:3000")
+@CrossOrigin(
+    origins = {
+        "http://localhost:3000",
+        "https://easybuy-ecommerce.vercel.app"
+    }
+)
 public class ProductController {
 
     private final ProductRepository productRepository;
