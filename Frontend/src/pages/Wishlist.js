@@ -1,6 +1,6 @@
 import { useEffect, useState, useCallback } from "react";
 import axios from "axios";
-import { FaHeart } from "react-icons/fa";
+import { FaHeart, FaChevronRight, FaTrash } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import "./Wishlist.css";
@@ -10,37 +10,43 @@ export default function Wishlist() {
   const token = localStorage.getItem("token");
   const navigate = useNavigate();
 
+  const API_URL = process.env.REACT_APP_API_URL;
+
   const loadWishlist = useCallback(() => {
     if (!token) {
       navigate("/login");
       return;
     }
 
-    axios.get("http://localhost:8080/api/wishlist", {
-      headers: { Authorization: `Bearer ${token}` }
-    })
-    .then(res => setItems(res.data))
-    .catch(err => console.error("Error loading wishlist:", err));
-  }, [token, navigate]);
+    axios
+      .get(`${API_URL}/api/wishlist`, {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+      .then((res) => setItems(res.data))
+      .catch((err) => console.error("Error loading wishlist:", err));
+  }, [token, navigate, API_URL]);
 
   useEffect(() => {
     loadWishlist();
   }, [loadWishlist]);
 
   const remove = (id) => {
-    axios.delete(`http://localhost:8080/api/wishlist/${id}`, {
-      headers: { Authorization: `Bearer ${token}` }
-    })
-    .then(loadWishlist)
-    .catch(err => console.error("Error removing wishlist item:", err));
+    axios
+      .delete(`${API_URL}/api/wishlist/${id}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+      .then(loadWishlist)
+      .catch((err) => console.error("Error removing wishlist item:", err));
   };
 
   const addToCart = async (productId) => {
     try {
       await axios.post(
-        `http://localhost:8080/api/cart/add/${productId}`,
+        `${API_URL}/api/cart/add/${productId}`,
         {},
-        { headers: { Authorization: `Bearer ${token}` } }
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
       );
       alert("Added to cart 🛒");
     } catch (err) {
@@ -52,9 +58,11 @@ export default function Wishlist() {
   const buyNow = async (productId) => {
     try {
       await axios.post(
-        `http://localhost:8080/api/cart/add/${productId}`,
+        `${API_URL}/api/cart/add/${productId}`,
         {},
-        { headers: { Authorization: `Bearer ${token}` } }
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
       );
       navigate("/payment");
     } catch (err) {
@@ -78,14 +86,20 @@ export default function Wishlist() {
 
         {items.length > 0 ? (
           <div className="wishlist-grid animate-fade">
-            {items.map(item => {
+            {items.map((item) => {
               const p = item.product;
               return (
-                <div key={item.id} className="wishlist-card" onClick={() => navigate(`/products/${p.id}`)}>
+                <div
+                  key={item.id}
+                  className="wishlist-card"
+                  onClick={() => navigate(`/products/${p.id}`)}
+                >
                   {p.discountPercentage > 0 && (
-                    <span className="wishlist-card-badge">-{p.discountPercentage}%</span>
+                    <span className="wishlist-card-badge">
+                      -{p.discountPercentage}%
+                    </span>
                   )}
-                  
+
                   <div className="wishlist-img-box">
                     <img src={p.imageUrl} alt={p.name} />
                   </div>
@@ -97,23 +111,34 @@ export default function Wishlist() {
                   </div>
 
                   <div className="wishlist-card-actions">
-                    <button 
+                    <button
                       className="btn-premium wishlist-add-cart"
-                      onClick={(e) => { e.stopPropagation(); addToCart(p.id); }}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        addToCart(p.id);
+                      }}
                       disabled={p.stock === 0}
                     >
                       Add
                     </button>
-                    <button 
+
+                    <button
                       className="btn-premium wishlist-buy"
-                      onClick={(e) => { e.stopPropagation(); buyNow(p.id); }}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        buyNow(p.id);
+                      }}
                       disabled={p.stock === 0}
                     >
                       Buy
                     </button>
-                    <button 
+
+                    <button
                       className="wishlist-remove"
-                      onClick={(e) => { e.stopPropagation(); remove(item.id); }}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        remove(item.id);
+                      }}
                       title="Remove Item"
                     >
                       <FaTrash />
@@ -127,8 +152,14 @@ export default function Wishlist() {
           <div className="wishlist-empty-view animate-fade">
             <FaHeart className="empty-wishlist-icon" />
             <h2>Your Wishlist is Empty</h2>
-            <p>Save items you like in your wishlist to purchase them later. Click on the heart icon on any product card to add it here.</p>
-            <button className="btn-premium" onClick={() => navigate("/products")}>
+            <p>
+              Save items you like in your wishlist to purchase them later.
+              Click on the heart icon on any product card to add it here.
+            </p>
+            <button
+              className="btn-premium"
+              onClick={() => navigate("/products")}
+            >
               Explore Products
             </button>
           </div>
