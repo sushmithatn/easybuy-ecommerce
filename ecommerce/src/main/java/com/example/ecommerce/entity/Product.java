@@ -20,8 +20,8 @@ public class Product {
     @Column(nullable = false)
     private String name;
 
-    @Column(length = 2000)
-    private String description;
+@Column(columnDefinition = "TEXT")
+private String description;
 
     @Column(nullable = false)
     private double price;
@@ -35,9 +35,9 @@ public class Product {
     private double averageRating = 0.0;
 
     private double discountPercentage = 0.0; // e.g. 10% off
-
-    @Column(length = 3000)
-    private String specifications; // JSON string or text block of technical details
+    
+@Column(columnDefinition = "TEXT")
+private String specifications;// JSON string or text block of technical details
 
     @ManyToOne
     @JoinColumn(name = "category_id")
