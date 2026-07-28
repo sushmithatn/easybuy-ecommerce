@@ -51,22 +51,24 @@ axios.get(
 
   // Load Products
   const loadProducts = useCallback(() => {
-    setLoading(true);
+   setLoading(true);
 
-let url = `https://easybuy-ecommerce-n8y6.onrender.com/api/products?page=${currentPage}`;
-    if (selectedCategory) url += `&categoryId=${selectedCategory}`;
-    if (searchQuery) url += `&search=${encodeURIComponent(searchQuery)}`;
-    if (priceRange) url += `&maxPrice=${priceRange}`;
+   let url = `${process.env.REACT_APP_API_URL}/api/products?page=${currentPage}&size=12&sortBy=${sortBy}&direction=${sortDir}`;
 
-    axios.get(url)
-      .then(res => {
-        setProducts(res.data.content || []);
-        setTotalPages(res.data.totalPages || 0);
-        setTotalElements(res.data.totalElements || 0);
-      })
-      .catch(err => console.error("Error loading products:", err))
-      .finally(() => setLoading(false));
-  }, [currentPage, selectedCategory, searchQuery, priceRange, sortBy, sortDir]);
+   if (selectedCategory) url += `&categoryId=${selectedCategory}`;
+   if (searchQuery) url += `&search=${encodeURIComponent(searchQuery)}`;
+   if (priceRange) url += `&maxPrice=${priceRange}`;
+
+   axios.get(url)
+     .then((res) => {
+       setProducts(res.data.content || []);
+       setTotalPages(res.data.totalPages || 0);
+       setTotalElements(res.data.totalElements || 0);
+     })
+     .catch(console.error)
+     .finally(() => setLoading(false));
+
+}, [currentPage, selectedCategory, searchQuery, priceRange]);
 
   useEffect(() => {
     loadProducts();
