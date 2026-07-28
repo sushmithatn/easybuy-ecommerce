@@ -12,24 +12,22 @@ import org.springframework.stereotype.Repository;
 public interface ProductRepository extends JpaRepository<Product, Long> {
 
 
-    @Query(value = """
-            SELECT p FROM Product p
-            WHERE (:categoryId IS NULL OR p.category.id = :categoryId)
-            AND (
-                :search IS NULL 
-                OR p.name ILIKE CONCAT('%', :search, '%')
-                OR p.brand ILIKE CONCAT('%', :search, '%')
-                OR p.description ILIKE CONCAT('%', :search, '%')
-            )
-            AND (:minPrice IS NULL OR p.price >= :minPrice)
-            AND (:maxPrice IS NULL OR p.price <= :maxPrice)
-            """)
-    Page<Product> filterProducts(
-            @Param("categoryId") Long categoryId,
-            @Param("search") String search,
-            @Param("minPrice") Double minPrice,
-            @Param("maxPrice") Double maxPrice,
-            Pageable pageable
-    );
-
-}
+//     @Query("""
+// SELECT p FROM Product p
+// WHERE (:categoryId IS NULL OR p.category.id = :categoryId)
+// AND (
+//     :search IS NULL
+//     OR LOWER(p.name) LIKE LOWER(CONCAT('%', :search, '%'))
+//     OR LOWER(p.brand) LIKE LOWER(CONCAT('%', :search, '%'))
+//     OR LOWER(p.description) LIKE LOWER(CONCAT('%', :search, '%'))
+// )
+// AND (:minPrice IS NULL OR p.price >= :minPrice)
+// AND (:maxPrice IS NULL OR p.price <= :maxPrice)
+// """)
+// Page<Product> filterProducts(
+//         @Param("categoryId") Long categoryId,
+//         @Param("search") String search,
+//         @Param("minPrice") Double minPrice,
+//         @Param("maxPrice") Double maxPrice,
+//         Pageable pageable
+// );
