@@ -1,0 +1,1 @@
+export const API_URL = "https://https://easybuy-ecommerce-n8y6.onrender.com.onrender.com";
