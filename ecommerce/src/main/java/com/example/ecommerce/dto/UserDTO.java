@@ -2,6 +2,10 @@ package com.example.ecommerce.dto;
 
 import lombok.*;
 import java.util.List;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
 
 @Getter
 @Setter

@@ -2,6 +2,10 @@ package com.example.ecommerce.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
 
 @Entity
 @Table(name = "wishlist_items")

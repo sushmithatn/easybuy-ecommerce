@@ -36,17 +36,18 @@ public class DatabaseSeeder implements CommandLineRunner {
     }
 
     @Override
-    @Override
-public void run(String... args) {
+    public void run(String... args) {
+        User adminUser = null;
+        User regularUser = null;
 
-    // RESET ADMIN PASSWORD TEMPORARILY
-    User admin = userRepository.findByUsername("admin").orElse(null);
+        // RESET ADMIN PASSWORD TEMPORARILY
+        User admin = userRepository.findByUsername("admin").orElse(null);
 
-    if (admin != null) {
-        admin.setPassword(passwordEncoder.encode("admin123"));
-        userRepository.save(admin);
-        System.out.println("✅ Admin password reset");
-    }else {
+        if (admin != null) {
+            admin.setPassword(passwordEncoder.encode("admin123"));
+            adminUser = userRepository.save(admin);
+            System.out.println("✅ Admin password reset");
+        } else {
             adminUser = userRepository.findByUsername("admin").orElse(null);
         }
 
