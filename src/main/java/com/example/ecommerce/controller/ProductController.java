@@ -48,10 +48,7 @@ public class ProductController {
         // Adjust empty or whitespace search terms
         String searchTerm = (search != null && !search.trim().isEmpty()) ? search.trim() : null;
 
-        Page<Product> productsPage = productRepository.filterProducts(
-                categoryId, searchTerm, minPrice, maxPrice, pageable
-        );
-
+    Page<Product> productsPage = productRepository.findAll(pageable);
         List<ProductDTO> dtoList = productsPage.getContent().stream()
                 .map(this::convertToDto)
                 .collect(Collectors.toList());
