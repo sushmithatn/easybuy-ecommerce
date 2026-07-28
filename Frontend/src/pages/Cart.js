@@ -4,6 +4,7 @@ import { FaTrash, FaShoppingCart, FaArrowRight, FaTag } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import "./Cart.css";
+import { API_URL } from "../config";
 
 export default function Cart() {
   const [cart, setCart] = useState([]);
@@ -22,8 +23,8 @@ export default function Cart() {
       return;
     }
 
-    axios.get("http://localhost:8080/api/cart", {
-      headers: { Authorization: `Bearer ${token}` }
+axios.get(`${API_URL}/api/cart`, {
+        headers: { Authorization: `Bearer ${token}` }
     })
     .then(res => setCart(res.data))
     .catch(err => console.error("Error loading cart:", err));
@@ -34,24 +35,24 @@ export default function Cart() {
   }, [loadCart]);
 
   const increaseQty = (id) => {
-    axios.put(`http://localhost:8080/api/cart/increase/${id}`, {}, {
-      headers: { Authorization: `Bearer ${token}` }
+axios.put(`${API_URL}/api/cart/increase/${id}`, {}, {
+        headers: { Authorization: `Bearer ${token}` }
     })
     .then(loadCart)
     .catch(err => alert(err.response?.data?.message || "Cannot increase quantity"));
   };
 
   const decreaseQty = (id) => {
-    axios.put(`http://localhost:8080/api/cart/decrease/${id}`, {}, {
-      headers: { Authorization: `Bearer ${token}` }
+axios.put(`${API_URL}/api/cart/decrease/${id}`, {}, {
+        headers: { Authorization: `Bearer ${token}` }
     })
     .then(loadCart)
     .catch(err => console.error(err));
   };
 
   const removeItem = (id) => {
-    axios.delete(`http://localhost:8080/api/cart/${id}`, {
-      headers: { Authorization: `Bearer ${token}` }
+axios.delete(`${API_URL}/api/cart/${id}`, {
+        headers: { Authorization: `Bearer ${token}` }
     })
     .then(loadCart)
     .catch(err => console.error(err));
@@ -67,7 +68,7 @@ export default function Cart() {
 
     try {
       const res = await axios.get(
-        `http://localhost:8080/api/coupons/validate/${promoCode.trim().toUpperCase()}`,
+`${API_URL}/api/coupons/validate/${promoCode.trim().toUpperCase()}`
         { headers: { Authorization: `Bearer ${token}` } }
       );
       setDiscountPercentage(res.data.discountPercentage);

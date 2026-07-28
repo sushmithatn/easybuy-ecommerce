@@ -3,6 +3,7 @@ import axios from "axios";
 import AdminNavbar from "../components/AdminNavbar";
 import "../pages/admin/AdminDashboard.css";
 import { FaBoxOpen, FaShoppingBag, FaDollarSign, FaUsers } from "react-icons/fa";
+import { API_URL } from "../config";
 
 export default function AdminDashboard() {
   const [productsCount, setProductsCount] = useState(0);
@@ -17,20 +18,20 @@ export default function AdminDashboard() {
   const loadData = useCallback(async () => {
     try {
       // 1. Get products count
-      const prodRes = await axios.get("http://localhost:8080/api/products", {
-        headers: { Authorization: `Bearer ${token}` }
+const prodRes = await axios.get(`${API_URL}/api/products`, {
+          headers: { Authorization: `Bearer ${token}` }
       });
       setProductsCount(prodRes.data.totalElements || 0);
 
       // 2. Get categories count
-      const catRes = await axios.get("http://localhost:8080/api/categories", {
-        headers: { Authorization: `Bearer ${token}` }
+const catRes = await axios.get(`${API_URL}/api/categories`, {
+          headers: { Authorization: `Bearer ${token}` }
       });
       setCategoriesCount(catRes.data.length || 0);
 
       // 3. Get analytics (orders count & revenue)
-      const analyticsRes = await axios.get("http://localhost:8080/api/orders/admin/analytics", {
-        headers: { Authorization: `Bearer ${token}` }
+const analyticsRes = await axios.get(`${API_URL}/api/orders/admin/analytics`, {
+          headers: { Authorization: `Bearer ${token}` }
       });
       setAnalytics(analyticsRes.data);
     } catch (err) {

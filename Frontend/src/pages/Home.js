@@ -4,7 +4,7 @@ import axios from "axios";
 import { FaArrowRight, FaStar, FaEnvelope, FaHeadphones, FaShippingFast, FaUndo, FaLock } from "react-icons/fa";
 import Navbar from "../components/Navbar";
 import "./Home.css";
-
+import { API_URL } from "../config";
 export default function Home() {
   const navigate = useNavigate();
   const [trending, setTrending] = useState([]);
@@ -13,7 +13,7 @@ export default function Home() {
 
   useEffect(() => {
     // Fetch top 4 products for trending section
-    axios.get("http://localhost:8080/api/products?size=4")
+axios.get(`${API_URL}/api/products?size=4`)
       .then(res => setTrending(res.data.content || []))
       .catch(err => console.error(err));
   }, []);

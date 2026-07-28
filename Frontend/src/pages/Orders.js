@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import Navbar from "../components/Navbar";
 import "./Orders.css";
-
+import { API_URL } from "../config";
 export default function Orders() {
   const [orders, setOrders] = useState([]);
   const token = localStorage.getItem("token");
@@ -12,8 +12,8 @@ export default function Orders() {
     if (!username || !token) return;
 
     axios
-      .get(`http://localhost:8080/api/orders?username=${username}`, {
-        headers: {
+.get(`${API_URL}/api/orders?username=${username}`, {
+          headers: {
           Authorization: `Bearer ${token}`
         }
       })
@@ -41,7 +41,7 @@ export default function Orders() {
 
     try {
       const res = await axios.put(
-        `http://localhost:8080/api/orders/${orderId}/cancel`,
+       `${API_URL}/api/orders/${orderId}/cancel`
         {},
         {
           headers: {

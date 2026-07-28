@@ -4,6 +4,7 @@ import axios from "axios";
 import { FaMapMarkerAlt, FaCreditCard, FaCheckCircle, FaChevronRight, FaQrcode } from "react-icons/fa";
 import Navbar from "../components/Navbar";
 import "./Checkout.css";
+import { API_URL } from "../config";
 
 export default function Checkout() {
   const navigate = useNavigate();
@@ -47,8 +48,8 @@ export default function Checkout() {
       return;
     }
 
-    axios.get("http://localhost:8080/api/cart", {
-      headers: { Authorization: `Bearer ${token}` }
+axios.get(`${API_URL}/api/cart`, {
+        headers: { Authorization: `Bearer ${token}` }
     })
     .then(res => {
       setCart(res.data);
@@ -59,8 +60,8 @@ export default function Checkout() {
     })
     .catch(err => console.error(err));
 
-    axios.get("http://localhost:8080/api/users/addresses", {
-      headers: { Authorization: `Bearer ${token}` }
+axios.get(`${API_URL}/api/users/addresses`, {
+        headers: { Authorization: `Bearer ${token}` }
     })
     .then(res => setSavedAddresses(res.data))
     .catch(err => console.error(err));
@@ -93,7 +94,7 @@ export default function Checkout() {
 
     try {
       const res = await axios.get(
-        `http://localhost:8080/api/coupons/validate/${couponCode.trim()}`,
+`${API_URL}/api/coupons/validate/${couponCode.trim()}`
         { headers: { Authorization: `Bearer ${token}` } }
       );
       setDiscountPercentage(res.data.discountPercentage);
@@ -131,7 +132,7 @@ export default function Checkout() {
 
     try {
       const res = await axios.post(
-        "http://localhost:8080/api/orders/checkout",
+        `${API_URL}/api/orders/checkout`,
         payload,
         { headers: { Authorization: `Bearer ${token}` } }
       );

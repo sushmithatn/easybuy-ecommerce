@@ -3,6 +3,7 @@ import axios from "axios";
 import AdminNavbar from "../../components/AdminNavbar";
 import "./ManageOrders.css";
 import { FaCalendarAlt, FaEdit } from "react-icons/fa";
+import { API_URL } from "../../config";
 
 export default function ManageOrders() {
   const [orders, setOrders] = useState([]);
@@ -11,7 +12,7 @@ export default function ManageOrders() {
 
   const loadOrders = useCallback(() => {
     setLoading(true);
-    axios.get("http://localhost:8080/api/orders/admin", {
+   axios.get(`${API_URL}/api/orders/admin`, {
       headers: { Authorization: `Bearer ${token}` }
     })
     .then(res => setOrders(res.data))
@@ -25,7 +26,7 @@ export default function ManageOrders() {
 
   const updateStatus = (orderId, newStatus) => {
     axios.put(
-      `http://localhost:8080/api/orders/admin/${orderId}?status=${newStatus}`,
+      `${API_URL}/api/orders/admin/${orderId}?status=${newStatus}`
       {},
       { headers: { Authorization: `Bearer ${token}` } }
     )

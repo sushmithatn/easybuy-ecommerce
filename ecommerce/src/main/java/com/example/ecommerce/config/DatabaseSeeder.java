@@ -36,22 +36,17 @@ public class DatabaseSeeder implements CommandLineRunner {
     }
 
     @Override
-    public void run(String... args) {
-        // 1. Seed Users & Admins
-        User adminUser = null;
-        User regularUser = null;
+    @Override
+public void run(String... args) {
 
-        if (userRepository.findByUsername("admin").isEmpty()) {
-            User admin = new User();
-            admin.setUsername("admin");
-            admin.setPassword(passwordEncoder.encode("admin123"));
-            admin.setRole("ROLE_ADMIN");
-            admin.setFullName("System Administrator");
-            admin.setEmail("admin@shoply.com");
-            admin.setPhoneNumber("+111222333");
-            adminUser = userRepository.save(admin);
-            System.out.println("✅ Seeded admin user");
-        } else {
+    // RESET ADMIN PASSWORD TEMPORARILY
+    User admin = userRepository.findByUsername("admin").orElse(null);
+
+    if (admin != null) {
+        admin.setPassword(passwordEncoder.encode("admin123"));
+        userRepository.save(admin);
+        System.out.println("✅ Admin password reset");
+    }else {
             adminUser = userRepository.findByUsername("admin").orElse(null);
         }
 

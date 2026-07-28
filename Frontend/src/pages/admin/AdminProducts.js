@@ -3,6 +3,7 @@ import axios from "axios";
 import AdminNavbar from "../../components/AdminNavbar";
 import "./AdminProducts.css";
 import { FaTrash, FaEdit, FaPlus, FaSave, FaTimes } from "react-icons/fa";
+import { API_URL } from "../../config";
 
 export default function AdminProducts() {
   const [products, setProducts] = useState([]);
@@ -29,8 +30,7 @@ export default function AdminProducts() {
   const token = localStorage.getItem("token");
 
   // Fetch Categories for dropdown selector
-  useEffect(() => {
-    axios.get("http://localhost:8080/api/categories")
+  useEffect(() => {axios.get(`${API_URL}/api/categories`)
       .then(res => setCategories(res.data))
       .catch(err => console.error("Error loading categories:", err));
   }, []);
@@ -38,7 +38,7 @@ export default function AdminProducts() {
   // Fetch Products
   const loadProducts = useCallback(() => {
     setLoading(true);
-    axios.get(`http://localhost:8080/api/products?page=${currentPage}&size=6&sortBy=id&direction=desc`)
+    axios.get(`${API_URL}/api/products?page=${currentPage}&size=6&sortBy=id&direction=desc`)
       .then(res => {
         setProducts(res.data.content || []);
         setTotalPages(res.data.totalPages || 0);
@@ -86,17 +86,17 @@ export default function AdminProducts() {
 
     try {
       if (editId) {
-        await axios.put(
-          `http://localhost:8080/api/products/${editId}`,
-          payload,
-          { headers: { Authorization: `Bearer ${token}` } }
-        );
+       await axios.put(
+  `${API_URL}/api/products/${editId}`,
+  payload,
+  { headers: { Authorization: `Bearer ${token}` } }
+);
       } else {
-        await axios.post(
-          "http://localhost:8080/api/products",
-          payload,
-          { headers: { Authorization: `Bearer ${token}` } }
-        );
+    await axios.post(
+  `${API_URL}/api/products`,
+  payload,
+  { headers: { Authorization: `Bearer ${token}` } }
+);
       }
       resetForm();
       loadProducts();
@@ -123,7 +123,7 @@ export default function AdminProducts() {
     if (!window.confirm("Are you sure you want to delete this product?")) return;
 
     try {
-      await axios.delete(`http://localhost:8080/api/products/${id}`, {
+  await axios.delete(`${API_URL}/api/products/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       loadProducts();

@@ -1,5 +1,6 @@
 import { NavLink, useNavigate } from "react-router-dom";
 import { useEffect, useState, useContext, useRef, useCallback } from "react";
+import { API_URL } from "../config";
 import axios from "axios";
 import {
   FaShoppingCart,
@@ -41,13 +42,13 @@ export default function Navbar() {
     if (!token) return;
 
     try {
-      const cartRes = await axios.get("http://localhost:8080/api/cart/count", {
+      const cartRes = await axios.get(`${API_URL}/api/cart/count`,  {
         headers: { Authorization: `Bearer ${token}` }
       });
       setCartCount(cartRes.data);
 
-      const wishlistRes = await axios.get("http://localhost:8080/api/wishlist/count", {
-        headers: { Authorization: `Bearer ${token}` }
+const wishlistRes = await axios.get(`${API_URL}/api/wishlist/count`, {
+          headers: { Authorization: `Bearer ${token}` }
       });
       setWishlistCount(wishlistRes.data);
     } catch (err) {
@@ -72,8 +73,8 @@ export default function Navbar() {
     const delayDebounce = setTimeout(async () => {
       try {
         const res = await axios.get(
-          `http://localhost:8080/api/products?search=${searchQuery}&size=5`
-        );
+  `${API_URL}/api/products?search=${searchQuery}&size=5`
+);
         setSuggestions(res.data.content || []);
       } catch (err) {
         console.error(err);

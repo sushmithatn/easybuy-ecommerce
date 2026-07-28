@@ -4,6 +4,7 @@ import axios from "axios";
 import { FaChevronRight, FaArrowLeft } from "react-icons/fa";
 import Navbar from "../components/Navbar";
 import "./Payment.css";
+import { API_URL } from "../config";
 
 // Helper to dynamically load the Razorpay checkout script
 const loadRazorpayScript = () => {
@@ -53,8 +54,8 @@ export default function Payment() {
       return;
     }
 
-    axios.get("http://localhost:8080/api/users/addresses", {
-      headers: { Authorization: `Bearer ${token}` }
+axios.get(`${API_URL}/api/users/addresses`, {
+        headers: { Authorization: `Bearer ${token}` }
     })
     .then(res => setSavedAddresses(res.data))
     .catch(err => console.error("Error loading addresses:", err));
@@ -103,7 +104,7 @@ export default function Payment() {
         };
 
         const res = await axios.post(
-          `http://localhost:8080/api/orders/pay/${username}`,
+`${API_URL}/api/orders/pay/${username}`,
           payload,
           {
             headers: {
@@ -124,7 +125,7 @@ export default function Payment() {
 
         // 1. Create Razorpay Order on Backend
         const orderRes = await axios.post(
-          `http://localhost:8080/api/orders/razorpay/create`,
+`${API_URL}/api/orders/razorpay/create`,
           {},
           {
             headers: {
@@ -158,7 +159,7 @@ export default function Payment() {
               };
 
               const verificationRes = await axios.post(
-                "http://localhost:8080/api/orders/razorpay/verify",
+`${API_URL}/api/orders/razorpay/verify`,
                 verifyPayload,
                 {
                   headers: {

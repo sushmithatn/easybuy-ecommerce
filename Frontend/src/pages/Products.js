@@ -4,6 +4,7 @@ import axios from "axios";
 import { FaHeart, FaStar, FaEye, FaFilter, FaTimes } from "react-icons/fa";
 import Navbar from "../components/Navbar";
 import "./Products.css";
+import { API_URL } from "../config";
 
 export default function Products() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -35,8 +36,8 @@ export default function Products() {
 
   // Fetch Categories
   useEffect(() => {
-axios.get(
-"https://easybuy-ecommerce-n8y6.onrender.com/api/categories"
+axios.get(axios.get(`${API_URL}/api/categories`)
+
 )
       .then(res => setCategories(res.data))
       .catch(err => console.error("Error loading categories:", err));
@@ -124,9 +125,8 @@ axios.get(
     }
 
     try {
-      await axios.post(
-        `http://localhost:8080/api/cart/add/${productId}`,
-        {},
+     await axios.post(
+  `${API_URL}/api/cart/add/${productId}`,
         { headers: { Authorization: `Bearer ${token}` } }
       );
       alert("Added to cart 🛒");
@@ -145,9 +145,8 @@ axios.get(
     }
 
     try {
-      await axios.post(
-        `http://localhost:8080/api/cart/add/${productId}`,
-        {},
+     await axios.post(
+  `${API_URL}/api/cart/add/${productId}`,
         { headers: { Authorization: `Bearer ${token}` } }
       );
       navigate("/payment");
@@ -168,8 +167,7 @@ axios.get(
 
     try {
       await axios.post(
-        `http://localhost:8080/api/wishlist/${productId}`,
-        {},
+  `${API_URL}/api/wishlist/${productId}`,
         { headers: { Authorization: `Bearer ${token}` } }
       );
       alert("Added to wishlist ❤️");

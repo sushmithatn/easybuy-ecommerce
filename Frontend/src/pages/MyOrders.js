@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import Navbar from "../components/Navbar";
 import "./MyOrders.css";
+import { API_URL } from "../config";
 
 export default function MyOrders() {
   const [orders, setOrders] = useState([]);
@@ -12,8 +13,8 @@ export default function MyOrders() {
     if (!username) return;
 
     axios
-      .get(`http://localhost:8080/api/orders?username=${username}`, {
-        headers: {
+.get(`${API_URL}/api/orders?username=${username}`, {
+          headers: {
           Authorization: `Bearer ${token}`
         }
       })

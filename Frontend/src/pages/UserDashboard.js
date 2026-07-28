@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { FaUser, FaBoxOpen, FaMapMarkerAlt, FaLock, FaCalendarAlt, FaDownload, FaMapPin, FaTrash } from "react-icons/fa";
 import Navbar from "../components/Navbar";
 import "./UserDashboard.css";
+import { API_URL } from "../config";
 
 export default function UserDashboard() {
   const navigate = useNavigate();
@@ -43,7 +44,7 @@ export default function UserDashboard() {
 
   // Fetch initial profile, addresses, and orders
   const loadProfile = useCallback(() => {
-    axios.get("http://localhost:8080/api/users/profile", {
+    axios.get(`${API_URL}/api/users/profile`, {
       headers: { Authorization: `Bearer ${token}` }
     })
     .then(res => setProfile(res.data))
@@ -51,7 +52,7 @@ export default function UserDashboard() {
   }, [token]);
 
   const loadAddresses = useCallback(() => {
-    axios.get("http://localhost:8080/api/users/addresses", {
+ axios.get(`${API_URL}/api/users/addresses`, {
       headers: { Authorization: `Bearer ${token}` }
     })
     .then(res => setAddresses(res.data))
@@ -59,7 +60,7 @@ export default function UserDashboard() {
   }, [token]);
 
   const loadOrders = useCallback(() => {
-    axios.get("http://localhost:8080/api/orders", {
+    axios.get(`${API_URL}/api/orders`, {
       headers: { Authorization: `Bearer ${token}` }
     })
     .then(res => setOrders(res.data))
@@ -81,7 +82,7 @@ export default function UserDashboard() {
     e.preventDefault();
     setProfileMsg("");
 
-    axios.put("http://localhost:8080/api/users/profile", profile, {
+   axios.put(`${API_URL}/api/users/profile`, profile, {
       headers: { Authorization: `Bearer ${token}` }
     })
     .then(res => {
@@ -98,7 +99,7 @@ export default function UserDashboard() {
 
     const payload = { street, city, state, zipCode, country, phoneNumber: phone };
 
-    axios.post("http://localhost:8080/api/users/addresses", payload, {
+    axios.post(`${API_URL}/api/users/addresses`, payload, {
       headers: { Authorization: `Bearer ${token}` }
     })
     .then(() => {
@@ -116,7 +117,7 @@ export default function UserDashboard() {
 
   // Delete Address
   const handleDeleteAddress = (id) => {
-    axios.delete(`http://localhost:8080/api/users/addresses/${id}`, {
+  axios.delete(`${API_URL}/api/users/addresses/${id}`, {
       headers: { Authorization: `Bearer ${token}` }
     })
     .then(() => {
@@ -131,7 +132,7 @@ export default function UserDashboard() {
     setPassMsg("");
     setPassError("");
 
-    axios.put("http://localhost:8080/api/users/change-password", { oldPassword, newPassword }, {
+  axios.put(`${API_URL}/api/users/change-password`, { oldPassword, newPassword },  {
       headers: { Authorization: `Bearer ${token}` }
     })
     .then(() => {

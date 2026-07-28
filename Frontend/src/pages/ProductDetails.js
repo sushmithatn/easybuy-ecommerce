@@ -4,6 +4,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { FaHeart, FaShoppingCart, FaStar, FaChevronRight, FaRegStar, FaExchangeAlt } from "react-icons/fa";
 import Navbar from "../components/Navbar";
 import "./ProductDetails.css";
+import { API_URL } from "../config";
 
 export default function ProductDetails() {
   const { id } = useParams();
@@ -49,7 +50,7 @@ export default function ProductDetails() {
     if (otherIds.length > 0) {
       Promise.all(
         otherIds.map(oId => 
-          axios.get(`http://localhost:8080/api/products/${oId}`).then(res => res.data).catch(() => null)
+          axios.get(`${API_URL}/api/products/${id}`).then(res => res.data).catch(() => null)
         )
       ).then(results => {
         setRecentProducts(results.filter(r => r !== null));
@@ -63,7 +64,7 @@ export default function ProductDetails() {
     setLoading(true);
     try {
       // 1. Fetch Product
-      const prodRes = await axios.get(`http://localhost:8080/api/products/${id}`);
+      const prodRes = await axios.get(`${API_URL}/api/products/${id}`);
       const prod = prodRes.data;
       setProduct(prod);
       setSelectedImage(prod.imageUrl);
@@ -72,14 +73,14 @@ export default function ProductDetails() {
       updateRecentlyViewed(prod.id);
 
       // 2. Fetch Reviews
-      const reviewsRes = await axios.get(`http://localhost:8080/api/reviews/product/${id}`);
+     const reviewsRes = await axios.get(`${API_URL}/api/reviews/product/${id}`);
       setReviews(reviewsRes.data);
 
       // 3. Fetch Related Products (same category)
       if (prod.categoryId) {
-        const relatedRes = await axios.get(
-          `http://localhost:8080/api/products?categoryId=${prod.categoryId}&size=4`
-        );
+      const relatedRes = await axios.get(
+  `${API_URL}/api/products?categoryId=${prod.categoryId}&size=4`
+);
         const filteredRelated = (relatedRes.data.content || []).filter(item => item.id !== prod.id);
         setRelated(filteredRelated);
       }
@@ -169,7 +170,7 @@ export default function ProductDetails() {
     try {
       for (let i = 0; i < quantity; i++) {
         await axios.post(
-          `http://localhost:8080/api/cart/add/${product.id}`,
+    `${API_URL}/api/cart/add/${product.id}`,
           {},
           { headers: { Authorization: `Bearer ${token}` } }
         );
@@ -191,7 +192,7 @@ export default function ProductDetails() {
     try {
       for (let i = 0; i < quantity; i++) {
         await axios.post(
-          `http://localhost:8080/api/cart/add/${product.id}`,
+        `${API_URL}/api/wishlist/${product.id}`,
           {},
           { headers: { Authorization: `Bearer ${token}` } }
         );
@@ -212,7 +213,7 @@ export default function ProductDetails() {
 
     try {
       await axios.post(
-        `http://localhost:8080/api/wishlist/${product.id}`,
+        `${API_URL}/api/reviews/product/${product.id}`,
         {},
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -235,7 +236,7 @@ export default function ProductDetails() {
 
     try {
       await axios.post(
-        `http://localhost:8080/api/reviews/product/${product.id}`,
+        `${API_URL}/api/reviews/product/${product.id}`,
         { rating: userRating, comment: userComment },
         { headers: { Authorization: `Bearer ${token}` } }
       );

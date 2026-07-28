@@ -3,6 +3,7 @@ import axios from "axios";
 import AdminNavbar from "../../components/AdminNavbar";
 import "./AdminCategories.css";
 import { FaTrash, FaPlus, FaTag } from "react-icons/fa";
+import { API_URL } from "../../config";
 
 export default function AdminCategories() {
   const [categories, setCategories] = useState([]);
@@ -13,7 +14,7 @@ export default function AdminCategories() {
 
   const loadCategories = () => {
     setLoading(true);
-    axios.get("http://localhost:8080/api/categories")
+   axios.get(`${API_URL}/api/categories`)
       .then(res => setCategories(res.data))
       .catch(err => console.error("Error loading categories:", err))
       .finally(() => setLoading(false));
@@ -23,31 +24,42 @@ export default function AdminCategories() {
     loadCategories();
   }, []);
 
-  const handleAddCategory = async (e) => {
-    e.preventDefault();
-    if (!newCategoryName.trim()) return;
+const handleAddCategory = async (e) => {
+  e.preventDefault();
 
-    try {
-      await axios.post(
-        "http://localhost:8080/api/categories",
-        { name: newCategoryName.trim() },
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-      setNewCategoryName("");
-      loadCategories();
-    } catch (err) {
-      console.error(err);
-      alert(err.response?.data?.message || "Failed to add category");
-    }
-  };
+  if (!newCategoryName.trim()) return;
+
+  try {
+    await axios.post(
+      `${API_URL}/api/categories`,
+      { 
+        name: newCategoryName.trim() 
+      },
+      {
+        headers: { 
+          Authorization: `Bearer ${token}` 
+        }
+      }
+    );
+
+    setNewCategoryName("");
+    loadCategories();
+
+  } catch (err) {
+    console.error(err);
+    alert(err.response?.data?.message || "Failed to add category");
+  }
+};
 
   const handleDeleteCategory = async (id) => {
     if (!window.confirm("Are you sure you want to delete this category?")) return;
 
     try {
-      await axios.delete(`http://localhost:8080/api/categories/${id}`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+    await axios.delete(`${API_URL}/api/categories/${id}`, {
+  headers: { 
+    Authorization: `Bearer ${token}` 
+  }
+});
       loadCategories();
     } catch (err) {
       console.error(err);

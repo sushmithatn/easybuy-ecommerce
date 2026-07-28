@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { FaUser, FaLock, FaEnvelope, FaIdCard, FaPhone, FaMoon, FaSun, FaCheck, FaTimes } from "react-icons/fa";
 import { ThemeContext } from "../context/ThemeContext";
 import "./Register.css";
+import { API_URL } from "../config";
 
 export default function Register() {
   const [username, setUsername] = useState("");
@@ -52,7 +53,7 @@ export default function Register() {
     setLoading(true);
 
     try {
-      await axios.post("http://localhost:8080/api/auth/register", {
+     await axios.post(`${API_URL}/api/auth/register`,  {
         username,
         password,
         email,

@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { FaUser, FaLock, FaSun, FaMoon, FaEnvelope } from "react-icons/fa";
 import { ThemeContext } from "../context/ThemeContext";
 import "./Login.css";
+import { API_URL } from "../config";
 
 export default function Login() {
   const [username, setUsername] = useState("");
@@ -25,8 +26,8 @@ export default function Login() {
     setLoading(true);
 
     try {
-      const res = await axios.post("http://localhost:8080/api/auth/login", {
-        username,
+axios.post(`${API_URL}/api/auth/login`, {
+          username,
         password,
       });
 
