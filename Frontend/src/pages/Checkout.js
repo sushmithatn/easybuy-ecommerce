@@ -94,7 +94,7 @@ axios.get(`${API_URL}/api/users/addresses`, {
 
     try {
       const res = await axios.get(
-`${API_URL}/api/coupons/validate/${couponCode.trim()}`
+        `${API_URL}/api/coupons/validate/${couponCode.trim()}`,
         { headers: { Authorization: `Bearer ${token}` } }
       );
       setDiscountPercentage(res.data.discountPercentage);
