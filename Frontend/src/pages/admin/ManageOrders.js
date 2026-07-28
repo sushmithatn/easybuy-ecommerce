@@ -26,7 +26,7 @@ export default function ManageOrders() {
 
   const updateStatus = (orderId, newStatus) => {
     axios.put(
-      `${API_URL}/api/orders/admin/${orderId}?status=${newStatus}`
+      `${API_URL}/api/orders/admin/${orderId}?status=${newStatus}`,
       {},
       { headers: { Authorization: `Bearer ${token}` } }
     )
