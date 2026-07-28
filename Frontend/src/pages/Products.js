@@ -68,7 +68,7 @@ axios.get(
      .catch(console.error)
      .finally(() => setLoading(false));
 
-}, [currentPage, selectedCategory, searchQuery, priceRange]);
+}, [currentPage, selectedCategory, searchQuery, priceRange, sortBy, sortDir]);
 
   useEffect(() => {
     loadProducts();
