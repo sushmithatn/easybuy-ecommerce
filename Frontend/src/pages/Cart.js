@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import "./Cart.css";
 import { API_URL } from "../config.js";
+import { handleApiError } from "../utils/apiHandler";
 
 export default function Cart() {
   const [cart, setCart] = useState([]);
@@ -23,11 +24,12 @@ export default function Cart() {
       return;
     }
 
-axios.get(`${API_URL}/api/cart`, {
-        headers: { Authorization: `Bearer ${token}` }
-    })
-    .then(res => setCart(res.data))
-    .catch(err => console.error("Error loading cart:", err));
+    axios
+      .get(`${API_URL}/api/cart`, {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+      .then((res) => setCart(res.data))
+      .catch((err) => handleApiError(err, navigate, "Error loading cart"));
   }, [token, navigate]);
 
   useEffect(() => {
@@ -35,28 +37,40 @@ axios.get(`${API_URL}/api/cart`, {
   }, [loadCart]);
 
   const increaseQty = (id) => {
-axios.put(`${API_URL}/api/cart/increase/${id}`, {}, {
-        headers: { Authorization: `Bearer ${token}` }
-    })
-    .then(loadCart)
-    .catch(err => alert(err.response?.data?.message || "Cannot increase quantity"));
+    axios
+      .put(
+        `${API_URL}/api/cart/increase/${id}`,
+        {},
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      )
+      .then(loadCart)
+      .catch((err) => handleApiError(err, navigate, "Cannot increase quantity"));
   };
 
   const decreaseQty = (id) => {
-axios.put(`${API_URL}/api/cart/decrease/${id}`, {}, {
-        headers: { Authorization: `Bearer ${token}` }
-    })
-    .then(loadCart)
-    .catch(err => console.error(err));
+    axios
+      .put(
+        `${API_URL}/api/cart/decrease/${id}`,
+        {},
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      )
+      .then(loadCart)
+      .catch((err) => handleApiError(err, navigate, "Cannot decrease quantity"));
   };
 
   const removeItem = (id) => {
-axios.delete(`${API_URL}/api/cart/${id}`, {
-        headers: { Authorization: `Bearer ${token}` }
-    })
-    .then(loadCart)
-    .catch(err => console.error(err));
+    axios
+      .delete(`${API_URL}/api/cart/${id}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+      .then(loadCart)
+      .catch((err) => handleApiError(err, navigate, "Error removing item"));
   };
+
 
   const handleApplyCoupon = async (e) => {
     e.preventDefault();

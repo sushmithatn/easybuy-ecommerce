@@ -53,6 +53,11 @@ const wishlistRes = await axios.get(`${API_URL}/api/wishlist/count`, {
       setWishlistCount(wishlistRes.data);
     } catch (err) {
       console.error("Failed to load counts:", err);
+      if (err.response?.status === 401 || err.response?.status === 403) {
+        localStorage.removeItem("token");
+        localStorage.removeItem("role");
+        localStorage.removeItem("username");
+      }
     }
   }, [token]);
 

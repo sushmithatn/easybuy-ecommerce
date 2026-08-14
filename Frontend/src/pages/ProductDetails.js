@@ -5,6 +5,7 @@ import { FaHeart, FaShoppingCart, FaStar, FaChevronRight, FaRegStar, FaExchangeA
 import Navbar from "../components/Navbar";
 import "./ProductDetails.css";
 import { API_URL } from "../config.js";
+import { handleApiError } from "../utils/apiHandler";
 
 export default function ProductDetails() {
   const { id } = useParams();
@@ -170,15 +171,14 @@ export default function ProductDetails() {
     try {
       for (let i = 0; i < quantity; i++) {
         await axios.post(
-    `${API_URL}/api/cart/add/${product.id}`,
+          `${API_URL}/api/cart/add/${product.id}`,
           {},
           { headers: { Authorization: `Bearer ${token}` } }
         );
       }
       alert(`Added ${quantity} item(s) to cart 🛒`);
     } catch (err) {
-      console.error(err);
-      alert("Failed to add to cart");
+      handleApiError(err, navigate, "Failed to add to cart");
     }
   };
 
@@ -192,15 +192,14 @@ export default function ProductDetails() {
     try {
       for (let i = 0; i < quantity; i++) {
         await axios.post(
-        `${API_URL}/api/wishlist/${product.id}`,
+          `${API_URL}/api/cart/add/${product.id}`,
           {},
           { headers: { Authorization: `Bearer ${token}` } }
         );
       }
       navigate("/payment");
     } catch (err) {
-      console.error(err);
-      alert("Failed to proceed with Buy Now");
+      handleApiError(err, navigate, "Failed to proceed with Buy Now");
     }
   };
 
@@ -213,16 +212,16 @@ export default function ProductDetails() {
 
     try {
       await axios.post(
-        `${API_URL}/api/reviews/product/${product.id}`,
+        `${API_URL}/api/wishlist/${product.id}`,
         {},
         { headers: { Authorization: `Bearer ${token}` } }
       );
       alert("Added to wishlist ❤️");
     } catch (err) {
-      console.error(err);
-      alert("Failed to add to wishlist");
+      handleApiError(err, navigate, "Failed to add to wishlist");
     }
   };
+
 
   const handleReviewSubmit = async (e) => {
     e.preventDefault();

@@ -3,8 +3,8 @@ import { useSearchParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { FaHeart, FaStar, FaEye, FaFilter, FaTimes } from "react-icons/fa";
 import Navbar from "../components/Navbar";
-import "./Products.css";
 import { API_URL } from "../config.js";
+import { handleApiError } from "../utils/apiHandler";
 
 export default function Products() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -132,14 +132,14 @@ export default function Products() {
     }
 
     try {
-     await axios.post(
-  `${API_URL}/api/cart/add/${productId}`,
+      await axios.post(
+        `${API_URL}/api/cart/add/${productId}`,
+        {},
         { headers: { Authorization: `Bearer ${token}` } }
       );
       alert("Added to cart 🛒");
     } catch (err) {
-      console.error(err);
-      alert(err.response?.data?.message || "Failed to add to cart");
+      handleApiError(err, navigate, "Failed to add to cart");
     }
   };
 
@@ -152,14 +152,14 @@ export default function Products() {
     }
 
     try {
-     await axios.post(
-  `${API_URL}/api/cart/add/${productId}`,
+      await axios.post(
+        `${API_URL}/api/cart/add/${productId}`,
+        {},
         { headers: { Authorization: `Bearer ${token}` } }
       );
       navigate("/payment");
     } catch (err) {
-      console.error(err);
-      alert(err.response?.data?.message || "Failed to proceed with Buy Now");
+      handleApiError(err, navigate, "Failed to proceed with Buy Now");
     }
   };
 
@@ -174,13 +174,13 @@ export default function Products() {
 
     try {
       await axios.post(
-  `${API_URL}/api/wishlist/${productId}`,
+        `${API_URL}/api/wishlist/${productId}`,
+        {},
         { headers: { Authorization: `Bearer ${token}` } }
       );
       alert("Added to wishlist ❤️");
     } catch (err) {
-      console.error(err);
-      alert(err.response?.data?.message || "Failed to add to wishlist");
+      handleApiError(err, navigate, "Failed to add to wishlist");
     }
   };
 

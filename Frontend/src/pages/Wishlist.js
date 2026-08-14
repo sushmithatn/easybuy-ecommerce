@@ -4,6 +4,7 @@ import { FaHeart, FaChevronRight, FaTrash } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import { API_URL } from "../config.js";
+import { handleApiError } from "../utils/apiHandler";
 import "./Wishlist.css";
 
 export default function Wishlist() {
@@ -22,8 +23,8 @@ export default function Wishlist() {
         headers: { Authorization: `Bearer ${token}` },
       })
       .then((res) => setItems(res.data))
-      .catch((err) => console.error("Error loading wishlist:", err));
-  }, [token, navigate, API_URL]);
+      .catch((err) => handleApiError(err, navigate, "Error loading wishlist"));
+  }, [token, navigate]);
 
   useEffect(() => {
     loadWishlist();
@@ -35,7 +36,7 @@ export default function Wishlist() {
         headers: { Authorization: `Bearer ${token}` },
       })
       .then(loadWishlist)
-      .catch((err) => console.error("Error removing wishlist item:", err));
+      .catch((err) => handleApiError(err, navigate, "Error removing wishlist item"));
   };
 
   const addToCart = async (productId) => {
@@ -49,8 +50,7 @@ export default function Wishlist() {
       );
       alert("Added to cart 🛒");
     } catch (err) {
-      console.error(err);
-      alert(err.response?.data?.message || "Failed to add to cart");
+      handleApiError(err, navigate, "Failed to add to cart");
     }
   };
 
@@ -65,10 +65,10 @@ export default function Wishlist() {
       );
       navigate("/payment");
     } catch (err) {
-      console.error(err);
-      alert(err.response?.data?.message || "Failed to proceed with Buy");
+      handleApiError(err, navigate, "Failed to proceed with Buy");
     }
   };
+
 
   return (
     <div className="wishlist-wrapper">
