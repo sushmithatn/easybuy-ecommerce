@@ -3,6 +3,7 @@ import { useSearchParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { FaHeart, FaStar, FaEye, FaFilter, FaTimes } from "react-icons/fa";
 import Navbar from "../components/Navbar";
+import "./Products.css";
 import { API_URL } from "../config.js";
 import { handleApiError } from "../utils/apiHandler";
 
