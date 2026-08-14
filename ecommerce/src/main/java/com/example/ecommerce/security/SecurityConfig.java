@@ -94,6 +94,8 @@ public class SecurityConfig {
         .requestMatchers("/api/orders/**").authenticated()
         .requestMatchers("/api/reviews/**").authenticated()
         .requestMatchers("/api/coupons/**").authenticated()
+        .requestMatchers("/api/upload/**").authenticated()
+
 
 
         .anyRequest().authenticated()

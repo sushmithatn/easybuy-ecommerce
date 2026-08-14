@@ -2,8 +2,9 @@ import { useEffect, useState, useCallback } from "react";
 import axios from "axios";
 import AdminNavbar from "../../components/AdminNavbar";
 import "./AdminProducts.css";
-import { FaTrash, FaEdit, FaPlus, FaSave, FaTimes } from "react-icons/fa";
+import { FaTrash, FaEdit, FaPlus, FaSave, FaTimes, FaCloudUploadAlt, FaLink, FaImage } from "react-icons/fa";
 import { API_URL } from "../../config.js";
+
 
 export default function AdminProducts() {
   const [products, setProducts] = useState([]);
@@ -27,7 +28,46 @@ export default function AdminProducts() {
   const [editId, setEditId] = useState(null);
   const [loading, setLoading] = useState(false);
 
+  // Image Upload states
+  const [imageInputMode, setImageInputMode] = useState("file"); // "file" | "url"
+  const [uploadingImage, setUploadingImage] = useState(false);
+
   const token = localStorage.getItem("token");
+
+  const handleFileUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    setUploadingImage(true);
+    const formData = new FormData();
+    formData.append("file", file);
+
+    try {
+      const res = await axios.post(`${API_URL}/api/upload/image`, formData, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "multipart/form-data",
+        },
+      });
+
+      let uploadedUrl = res.data.imageUrl;
+      if (uploadedUrl && !uploadedUrl.startsWith("http")) {
+        uploadedUrl = `${API_URL}${uploadedUrl}`;
+      }
+      setImageUrl(uploadedUrl);
+    } catch (err) {
+      console.error("Upload failed, converting locally:", err);
+      // Fallback: Read as Data URL (Base64) so file selection works reliably in all environments
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImageUrl(reader.result);
+      };
+      reader.readAsDataURL(file);
+    } finally {
+      setUploadingImage(false);
+    }
+  };
+
 
   // Fetch Categories for dropdown selector
   useEffect(() => {axios.get(`${API_URL}/api/categories`)
@@ -235,18 +275,75 @@ export default function AdminProducts() {
                   required 
                 />
               </div>
+
               <div className="input-group">
-                <label>Image URL</label>
-                <input 
-                  type="text" 
-                  className="input-premium"
-                  placeholder="https://images.unsplash.com/..."
-                  value={imageUrl} 
-                  onChange={e => setImageUrl(e.target.value)} 
-                  required 
-                />
+                <div className="image-mode-header">
+                  <label>Product Image</label>
+                  <div className="mode-tab-buttons">
+                    <button 
+                      type="button" 
+                      className={imageInputMode === "file" ? "mode-tab-btn active" : "mode-tab-btn"}
+                      onClick={() => setImageInputMode("file")}
+                    >
+                      <FaCloudUploadAlt /> File
+                    </button>
+                    <button 
+                      type="button" 
+                      className={imageInputMode === "url" ? "mode-tab-btn active" : "mode-tab-btn"}
+                      onClick={() => setImageInputMode("url")}
+                    >
+                      <FaLink /> URL
+                    </button>
+                  </div>
+                </div>
+
+                {imageInputMode === "file" ? (
+                  <div className="file-upload-wrapper">
+                    <label className="file-upload-dropzone">
+                      <input 
+                        type="file" 
+                        accept="image/*" 
+                        onChange={handleFileUpload} 
+                        className="file-upload-input"
+                      />
+                      <FaCloudUploadAlt className="upload-icon" />
+                      <span className="upload-label-text">
+                        {uploadingImage ? "Uploading Image..." : "Choose Image from Computer"}
+                      </span>
+                      <span className="upload-hint-text">Supports JPG, PNG, WEBP, GIF</span>
+                    </label>
+                  </div>
+                ) : (
+                  <input 
+                    type="text" 
+                    className="input-premium"
+                    placeholder="https://images.unsplash.com/..."
+                    value={imageUrl} 
+                    onChange={e => setImageUrl(e.target.value)} 
+                    required={!imageUrl} 
+                  />
+                )}
+
+                {imageUrl && (
+                  <div className="image-preview-badge">
+                    <img src={imageUrl} alt="Preview" className="preview-thumbnail" />
+                    <div className="preview-info">
+                      <span className="preview-status">✓ Image Selected</span>
+                      <span className="preview-path" title={imageUrl}>{imageUrl}</span>
+                    </div>
+                    <button 
+                      type="button" 
+                      className="clear-img-btn" 
+                      onClick={() => setImageUrl("")}
+                      title="Remove Image"
+                    >
+                      <FaTimes />
+                    </button>
+                  </div>
+                )}
               </div>
             </div>
+
 
             <div className="input-group">
               <label>Technical Specifications (JSON format)</label>

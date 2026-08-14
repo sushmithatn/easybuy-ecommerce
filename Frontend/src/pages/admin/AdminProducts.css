@@ -185,3 +185,130 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* Image Upload Controls */
+.image-mode-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+}
+
+.mode-tab-buttons {
+  display: flex;
+  gap: 6px;
+}
+
+.mode-tab-btn {
+  background-color: var(--bg-tertiary);
+  border: 1px solid var(--border-color);
+  color: var(--text-secondary);
+  font-size: 11px;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.mode-tab-btn.active {
+  background-color: var(--primary-color);
+  color: white;
+  border-color: var(--primary-color);
+}
+
+.file-upload-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.file-upload-dropzone {
+  border: 2px dashed var(--border-color);
+  border-radius: var(--border-radius-md);
+  padding: 16px;
+  text-align: center;
+  background-color: var(--bg-primary);
+  cursor: pointer;
+  transition: border-color 0.2s, background-color 0.2s;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.file-upload-dropzone:hover {
+  border-color: var(--primary-color);
+  background-color: rgba(236, 72, 153, 0.05);
+}
+
+.file-upload-input {
+  display: none;
+}
+
+.upload-icon {
+  font-size: 22px;
+  color: var(--primary-color);
+}
+
+.upload-label-text {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.upload-hint-text {
+  font-size: 10px;
+  color: var(--text-muted);
+}
+
+.image-preview-badge {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background-color: var(--bg-tertiary);
+  border: 1px solid var(--border-color);
+  padding: 8px 12px;
+  border-radius: var(--border-radius-sm);
+  margin-top: 6px;
+}
+
+.preview-thumbnail {
+  width: 44px;
+  height: 44px;
+  object-fit: contain;
+  border-radius: 4px;
+  background-color: white;
+  border: 1px solid var(--border-color);
+}
+
+.preview-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.preview-status {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--success-color);
+}
+
+.preview-path {
+  font-size: 11px;
+  color: var(--text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.clear-img-btn {
+  background: none;
+  border: none;
+  color: var(--error-color);
+  cursor: pointer;
+  font-size: 14px;
+  padding: 4px;
+}
+
