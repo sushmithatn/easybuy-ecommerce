@@ -1,7 +1,9 @@
 import { NavLink, useNavigate } from "react-router-dom";
 import { useEffect, useState, useContext, useRef, useCallback } from "react";
 import { API_URL } from "../config.js";
+import { formatImageUrl } from "../utils/apiHandler";
 import axios from "axios";
+
 import {
   FaShoppingCart,
   FaHeart,
@@ -144,8 +146,9 @@ const wishlistRes = await axios.get(`${API_URL}/api/wishlist/count`, {
             <ul className="search-suggestions">
               {suggestions.map((p) => (
                 <li key={p.id} onClick={() => handleSuggestionClick(p.id)}>
-                  <img src={p.imageUrl} alt={p.name} className="suggestion-img" />
+                  <img src={formatImageUrl(p.imageUrl)} alt={p.name} className="suggestion-img" />
                   <div className="suggestion-info">
+
                     <span className="suggestion-name">{p.name}</span>
                     <span className="suggestion-price">₹{p.price}</span>
                   </div>

@@ -1,3 +1,13 @@
+import { API_URL } from "../config";
+
+export const formatImageUrl = (url) => {
+  if (!url) return "https://via.placeholder.com/400x400?text=No+Image";
+  if (url.startsWith("/")) {
+    return `${API_URL}${url}`;
+  }
+  return url;
+};
+
 /**
  * Handles API errors, specifically identifying HTTP 401/403 (Session Expired / Unauthorized)
  * and clearing invalid local storage state before redirecting to login.
@@ -23,3 +33,4 @@ export const handleApiError = (err, navigate, fallbackMessage = "Operation faile
   alert(finalMsg);
   return finalMsg;
 };
+

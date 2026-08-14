@@ -126,20 +126,23 @@ export default function AdminProducts() {
 
     try {
       if (editId) {
-       await axios.put(
-  `${API_URL}/api/products/${editId}`,
-  payload,
-  { headers: { Authorization: `Bearer ${token}` } }
-);
+        await axios.put(
+          `${API_URL}/api/products/${editId}`,
+          payload,
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+        alert("Product updated successfully! ✅");
       } else {
-    await axios.post(
-  `${API_URL}/api/products`,
-  payload,
-  { headers: { Authorization: `Bearer ${token}` } }
-);
+        await axios.post(
+          `${API_URL}/api/products`,
+          payload,
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+        alert("Product added successfully! 🎉 It is now live on the customer store.");
       }
       resetForm();
       loadProducts();
+
     } catch (err) {
       console.error(err);
       alert(err.response?.data?.message || "Operation failed ❌");

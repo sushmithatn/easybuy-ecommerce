@@ -5,7 +5,8 @@ import { FaHeart, FaShoppingCart, FaStar, FaChevronRight, FaRegStar, FaExchangeA
 import Navbar from "../components/Navbar";
 import "./ProductDetails.css";
 import { API_URL } from "../config.js";
-import { handleApiError } from "../utils/apiHandler";
+import { handleApiError, formatImageUrl } from "../utils/apiHandler";
+
 
 export default function ProductDetails() {
   const { id } = useParams();
@@ -68,7 +69,8 @@ export default function ProductDetails() {
       const prodRes = await axios.get(`${API_URL}/api/products/${id}`);
       const prod = prodRes.data;
       setProduct(prod);
-      setSelectedImage(prod.imageUrl);
+      setSelectedImage(formatImageUrl(prod.imageUrl));
+
 
       // Update recently viewed
       updateRecentlyViewed(prod.id);
@@ -269,8 +271,9 @@ export default function ProductDetails() {
         {/* Gallery Section */}
         <div className="details-gallery">
           <div className="main-image-container">
-            <img src={selectedImage} alt={product.name} className="zoom-image" />
+            <img src={formatImageUrl(selectedImage)} alt={product.name} className="zoom-image" />
           </div>
+
           
           {product.galleryImages && product.galleryImages.length > 0 && (
             <div className="thumbnail-gallery">

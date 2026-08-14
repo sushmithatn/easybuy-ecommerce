@@ -5,7 +5,8 @@ import { useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import "./Cart.css";
 import { API_URL } from "../config.js";
-import { handleApiError } from "../utils/apiHandler";
+import { handleApiError, formatImageUrl } from "../utils/apiHandler";
+
 
 export default function Cart() {
   const [cart, setCart] = useState([]);
@@ -121,8 +122,9 @@ export default function Cart() {
                 {cart.map(item => (
                   <div className="cart-row" key={item.id}>
                     <div className="cart-item-info" onClick={() => navigate(`/products/${item.productId}`)}>
-                      <img src={item.imageUrl} alt={item.productName} />
+                      <img src={formatImageUrl(item.imageUrl)} alt={item.productName} />
                       <div>
+
                         <h4>{item.productName}</h4>
                         <span className="remove-row-link" onClick={(e) => { e.stopPropagation(); removeItem(item.id); }}>
                           <FaTrash /> Remove

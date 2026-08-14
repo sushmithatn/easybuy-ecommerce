@@ -4,8 +4,9 @@ import { FaHeart, FaChevronRight, FaTrash } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import { API_URL } from "../config.js";
-import { handleApiError } from "../utils/apiHandler";
+import { handleApiError, formatImageUrl } from "../utils/apiHandler";
 import "./Wishlist.css";
+
 
 export default function Wishlist() {
   const [items, setItems] = useState([]);
@@ -100,8 +101,9 @@ export default function Wishlist() {
                   )}
 
                   <div className="wishlist-img-box">
-                    <img src={p.imageUrl} alt={p.name} />
+                    <img src={formatImageUrl(p.imageUrl)} alt={p.name} />
                   </div>
+
 
                   <div className="wishlist-info">
                     <span className="wishlist-brand">{p.brand}</span>

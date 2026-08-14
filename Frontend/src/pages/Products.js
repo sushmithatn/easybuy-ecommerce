@@ -5,7 +5,8 @@ import { FaHeart, FaStar, FaEye, FaFilter, FaTimes } from "react-icons/fa";
 import Navbar from "../components/Navbar";
 import "./Products.css";
 import { API_URL } from "../config.js";
-import { handleApiError } from "../utils/apiHandler";
+import { handleApiError, formatImageUrl } from "../utils/apiHandler";
+
 
 export default function Products() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -21,10 +22,11 @@ export default function Products() {
   // Filter states
   const [selectedCategory, setSelectedCategory] = useState(searchParams.get("categoryId") || "");
   const [searchQuery, setSearchQuery] = useState(searchParams.get("search") || "");
-  const [priceRange, setPriceRange] = useState(searchParams.get("maxPrice") || 25000);
+  const [priceRange, setPriceRange] = useState(searchParams.get("maxPrice") || 1000000);
   const [sortBy, setSortBy] = useState(searchParams.get("sortBy") || "id");
-  const [sortDir, setSortDir] = useState(searchParams.get("sortDir") || "asc");
+  const [sortDir, setSortDir] = useState(searchParams.get("sortDir") || "desc");
   const [currentPage, setCurrentPage] = useState(parseInt(searchParams.get("page")) || 0);
+
 
   // Mobile sidebar filter toggle
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -290,7 +292,8 @@ export default function Products() {
                   )}
 
                   <div className="card-image-box">
-                    <img src={p.imageUrl} alt={p.name} />
+                    <img src={formatImageUrl(p.imageUrl)} alt={p.name} />
+
                     
                     {/* Floating Buttons */}
                     <div className="card-floating-actions">
