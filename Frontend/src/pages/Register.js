@@ -52,17 +52,26 @@ export default function Register() {
 
     setLoading(true);
 
+    const cleanUsername = username.trim();
+    const cleanEmail = email.trim();
+
     try {
-     await axios.post(`${API_URL}/api/auth/register`,  {
-        username,
+      await axios.post(`${API_URL}/api/auth/register`, {
+        username: cleanUsername,
         password,
-        email,
-        fullName,
-        phoneNumber,
+        email: cleanEmail,
+        fullName: fullName.trim(),
+        phoneNumber: phoneNumber.trim(),
       });
 
-      alert("Registration successful ✅");
-      navigate("/"); // Redirect to login
+      alert("Registration successful! Please log in 🔑");
+      navigate("/login", {
+        state: {
+          registered: true,
+          username: cleanUsername,
+          message: "Registration successful! Please sign in with your account. ✅"
+        }
+      });
     } catch (err) {
       console.error(err);
       setError(err.response?.data?.message || "Registration failed. Try a different username");
@@ -70,6 +79,7 @@ export default function Register() {
       setLoading(false);
     }
   };
+
 
   return (
     <div className="auth-wrapper animate-fade">

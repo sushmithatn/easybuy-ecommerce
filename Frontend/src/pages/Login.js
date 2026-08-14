@@ -1,16 +1,18 @@
 import { useState, useContext } from "react";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { FaUser, FaLock, FaSun, FaMoon, FaEnvelope } from "react-icons/fa";
 import { ThemeContext } from "../context/ThemeContext";
 import "./Login.css";
 import { API_URL } from "../config.js";
 
 export default function Login() {
-  const [username, setUsername] = useState("");
+  const location = useLocation();
+  const [username, setUsername] = useState(location.state?.username || "");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [successMsg, setSuccessMsg] = useState(location.state?.message || "");
   const { theme, toggleTheme } = useContext(ThemeContext);
   const navigate = useNavigate();
 
@@ -23,11 +25,14 @@ export default function Login() {
   const handleLogin = async (e) => {
     e.preventDefault();
     setError("");
+    setSuccessMsg("");
     setLoading(true);
+
+    const cleanUsername = username.trim();
 
     try {
       const res = await axios.post(`${API_URL}/api/auth/login`, {
-        username,
+        username: cleanUsername,
         password,
       });
 
@@ -35,7 +40,7 @@ export default function Login() {
 
       localStorage.setItem("token", token);
       localStorage.setItem("role", role);
-      localStorage.setItem("username", username);
+      localStorage.setItem("username", cleanUsername);
 
       if (role === "ROLE_ADMIN") {
         navigate("/admin");
@@ -86,7 +91,9 @@ export default function Login() {
           <h2>Welcome Back</h2>
           <p className="subtitle">Sign in to continue shopping</p>
 
+          {successMsg && <div className="success-message-box animate-fade">{successMsg}</div>}
           {error && <div className="error-message-box animate-fade">{error}</div>}
+
 
           <form onSubmit={handleLogin}>
             <div className="input-group">

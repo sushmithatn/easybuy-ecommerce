@@ -33,18 +33,25 @@ public class AuthService {
 
     // REGISTER
     public void register(RegisterRequest request) {
-        if (userRepository.findByUsername(request.getUsername()).isPresent()) {
+        String cleanUsername = request.getUsername() != null ? request.getUsername().trim() : "";
+        String cleanEmail = request.getEmail() != null ? request.getEmail().trim() : "";
+
+        if (userRepository.findByUsernameIgnoreCase(cleanUsername).isPresent()) {
             throw new BadRequestException("Username is already taken");
         }
 
-        User user = new User();
-        user.setUsername(request.getUsername());
-        user.setPassword(passwordEncoder.encode(request.getPassword()));
-        user.setEmail(request.getEmail());
-        user.setFullName(request.getFullName());
-        user.setPhoneNumber(request.getPhoneNumber());
+        if (!cleanEmail.isEmpty() && userRepository.findByEmailIgnoreCase(cleanEmail).isPresent()) {
+            throw new BadRequestException("Email is already registered");
+        }
 
-        if (request.getRole() != null && (request.getRole().equals("ROLE_ADMIN") || request.getRole().equals("ADMIN"))) {
+        User user = new User();
+        user.setUsername(cleanUsername);
+        user.setPassword(passwordEncoder.encode(request.getPassword()));
+        user.setEmail(cleanEmail);
+        user.setFullName(request.getFullName() != null ? request.getFullName().trim() : "");
+        user.setPhoneNumber(request.getPhoneNumber() != null ? request.getPhoneNumber().trim() : "");
+
+        if (request.getRole() != null && (request.getRole().equalsIgnoreCase("ROLE_ADMIN") || request.getRole().equalsIgnoreCase("ADMIN"))) {
             user.setRole("ROLE_ADMIN");
         } else {
             user.setRole("ROLE_USER");
@@ -55,16 +62,22 @@ public class AuthService {
 
     // LOGIN
     public User authenticateAndGetUser(LoginRequest request) {
+        String cleanUsername = request.getUsername() != null ? request.getUsername().trim() : "";
+
+        User user = userRepository.findByUsernameIgnoreCase(cleanUsername)
+                .or(() -> userRepository.findByEmailIgnoreCase(cleanUsername))
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
-                        request.getUsername(),
+                        user.getUsername(),
                         request.getPassword()
                 )
         );
 
-        return userRepository.findByUsername(request.getUsername())
-                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+        return user;
     }
+
 
     // Generate token
     public String generateToken(String username) {
