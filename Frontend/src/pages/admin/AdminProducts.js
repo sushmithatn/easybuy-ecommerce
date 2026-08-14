@@ -1,12 +1,15 @@
 import { useEffect, useState, useCallback } from "react";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import AdminNavbar from "../../components/AdminNavbar";
 import "./AdminProducts.css";
 import { FaTrash, FaEdit, FaPlus, FaSave, FaTimes, FaCloudUploadAlt, FaLink, FaImage } from "react-icons/fa";
 import { API_URL } from "../../config.js";
+import { handleApiError } from "../../utils/apiHandler";
 
 
 export default function AdminProducts() {
+  const navigate = useNavigate();
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
   
@@ -166,13 +169,13 @@ export default function AdminProducts() {
     if (!window.confirm("Are you sure you want to delete this product?")) return;
 
     try {
-  await axios.delete(`${API_URL}/api/products/${id}`, {
+      await axios.delete(`${API_URL}/api/products/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
+      alert("Product deleted successfully! 🗑️");
       loadProducts();
     } catch (err) {
-      console.error(err);
-      alert("Failed to delete product");
+      handleApiError(err, navigate, "Failed to delete product");
     }
   };
 
