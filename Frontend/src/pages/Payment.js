@@ -48,6 +48,9 @@ export default function Payment() {
 
   // Netbanking details
   const [selectedBank, setSelectedBank] = useState("SBI");
+  const [bankAccountNo, setBankAccountNo] = useState("");
+  const [ifscCode, setIfscCode] = useState("");
+  const [netbankingAmount, setNetbankingAmount] = useState("");
 
   // Order summary and success states
   const [cartTotal, setCartTotal] = useState(0);
@@ -76,7 +79,9 @@ export default function Payment() {
       const subtotal = items.reduce((sum, i) => sum + (i.product?.price || 0) * i.quantity, 0);
       const shipping = subtotal > 5000 || subtotal === 0 ? 0 : 150;
       const tax = subtotal * 0.18;
-      setCartTotal(Math.round(subtotal + shipping + tax));
+      const calculatedTotal = Math.round(subtotal + shipping + tax);
+      setCartTotal(calculatedTotal);
+      setNetbankingAmount(calculatedTotal ? String(calculatedTotal) : "");
     })
     .catch(err => console.error("Error loading cart total:", err));
   }, [token, username, navigate]);
@@ -124,6 +129,11 @@ export default function Payment() {
         alert("Please enter a valid UPI ID 📱");
         return;
       }
+    } else if (paymentMethod === "NETBANKING") {
+      if (!bankAccountNo || !ifscCode) {
+        alert("Please enter Account Number and IFSC Code for Net Banking 🏦");
+        return;
+      }
     }
 
     setIsProcessing(true);
@@ -132,7 +142,7 @@ export default function Payment() {
       let displayMethodName = "Card Payment";
       if (paymentMethod === "CARD") displayMethodName = "Credit/Debit Card";
       if (paymentMethod === "UPI") displayMethodName = `UPI (${selectedUpiApp} - ${upiId})`;
-      if (paymentMethod === "NETBANKING") displayMethodName = `Net Banking (${selectedBank})`;
+      if (paymentMethod === "NETBANKING") displayMethodName = `Net Banking (${selectedBank} Bank - Acc: ${bankAccountNo}, IFSC: ${ifscCode})`;
       if (paymentMethod === "COD") displayMethodName = "Cash on Delivery";
 
       const payload = {
@@ -466,6 +476,44 @@ export default function Payment() {
                         </button>
                       ))}
                     </div>
+
+                    <div className="input-field-group" style={{ marginTop: '14px' }}>
+                      <label>Account Number</label>
+                      <input
+                        type="text"
+                        className="premium-input-box"
+                        placeholder="e.g. 123456789012"
+                        value={bankAccountNo}
+                        onChange={(e) => setBankAccountNo(e.target.value.replace(/\D/g, ""))}
+                        required
+                      />
+                    </div>
+
+                    <div className="input-fields-row">
+                      <div className="input-field-group">
+                        <label>IFSC Code</label>
+                        <input
+                          type="text"
+                          className="premium-input-box"
+                          placeholder="e.g. SBIN0001234"
+                          value={ifscCode}
+                          onChange={(e) => setIfscCode(e.target.value.toUpperCase())}
+                          required
+                        />
+                      </div>
+
+                      <div className="input-field-group">
+                        <label>Amount (₹)</label>
+                        <input
+                          type="text"
+                          className="premium-input-box"
+                          placeholder="4278.82"
+                          value={netbankingAmount}
+                          onChange={(e) => setNetbankingAmount(e.target.value)}
+                          required
+                        />
+                      </div>
+                    </div>
                   </div>
                 )}
 
@@ -490,7 +538,7 @@ export default function Payment() {
                   ) : paymentMethod === "COD" ? (
                     "Confirm COD Order"
                   ) : (
-                    `Pay ₹${cartTotal > 0 ? cartTotal.toLocaleString('en-IN') : ""} & Complete Order`
+                    "Pay & Complete Order"
                   )}
                 </button>
               </form>
