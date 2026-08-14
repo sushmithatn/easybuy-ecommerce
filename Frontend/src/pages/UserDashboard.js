@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { FaUser, FaBoxOpen, FaMapMarkerAlt, FaLock, FaCalendarAlt, FaDownload, FaMapPin, FaTrash } from "react-icons/fa";
 import Navbar from "../components/Navbar";
 import "./UserDashboard.css";
-import { API_URL } from "../config";
+import { API_URL } from "../config.js";
 
 export default function UserDashboard() {
   const navigate = useNavigate();

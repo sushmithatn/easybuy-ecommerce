@@ -1,6 +1,6 @@
 import { NavLink, useNavigate } from "react-router-dom";
 import { useEffect, useState, useContext, useRef, useCallback } from "react";
-import { API_URL } from "../config";
+import { API_URL } from "../config.js";
 import axios from "axios";
 import {
   FaShoppingCart,

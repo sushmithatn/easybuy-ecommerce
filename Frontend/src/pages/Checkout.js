@@ -4,7 +4,7 @@ import axios from "axios";
 import { FaMapMarkerAlt, FaCreditCard, FaCheckCircle, FaChevronRight, FaQrcode } from "react-icons/fa";
 import Navbar from "../components/Navbar";
 import "./Checkout.css";
-import { API_URL } from "../config";
+import { API_URL } from "../config.js";
 
 export default function Checkout() {
   const navigate = useNavigate();

@@ -3,7 +3,7 @@ import axios from "axios";
 import AdminNavbar from "../components/AdminNavbar";
 import "../pages/admin/AdminDashboard.css";
 import { FaBoxOpen, FaShoppingBag, FaDollarSign, FaUsers } from "react-icons/fa";
-import { API_URL } from "../config";
+import { API_URL } from "../config.js";
 
 export default function AdminDashboard() {
   const [productsCount, setProductsCount] = useState(0);

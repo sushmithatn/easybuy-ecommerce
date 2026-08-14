@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { FaUser, FaLock, FaSun, FaMoon, FaEnvelope } from "react-icons/fa";
 import { ThemeContext } from "../context/ThemeContext";
 import "./Login.css";
-import { API_URL } from "../config";
+import { API_URL } from "../config.js";
 
 export default function Login() {
   const [username, setUsername] = useState("");

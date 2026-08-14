@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import Navbar from "../components/Navbar";
 import "./MyOrders.css";
-import { API_URL } from "../config";
+import { API_URL } from "../config.js";
 
 export default function MyOrders() {
   const [orders, setOrders] = useState([]);

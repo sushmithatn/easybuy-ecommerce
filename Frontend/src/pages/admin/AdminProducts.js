@@ -3,7 +3,7 @@ import axios from "axios";
 import AdminNavbar from "../../components/AdminNavbar";
 import "./AdminProducts.css";
 import { FaTrash, FaEdit, FaPlus, FaSave, FaTimes } from "react-icons/fa";
-import { API_URL } from "../../config";
+import { API_URL } from "../../config.js";
 
 export default function AdminProducts() {
   const [products, setProducts] = useState([]);

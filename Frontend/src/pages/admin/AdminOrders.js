@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { API_URL } from "../../config";
+import { API_URL } from "../../config.js";
 
 export default function AdminOrders() {
   const [orders, setOrders] = useState([]);

@@ -4,7 +4,7 @@ import axios from "axios";
 import { FaChevronRight, FaArrowLeft } from "react-icons/fa";
 import Navbar from "../components/Navbar";
 import "./Payment.css";
-import { API_URL } from "../config";
+import { API_URL } from "../config.js";
 
 // Helper to dynamically load the Razorpay checkout script
 const loadRazorpayScript = () => {

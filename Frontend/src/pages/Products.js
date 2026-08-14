@@ -4,7 +4,7 @@ import axios from "axios";
 import { FaHeart, FaStar, FaEye, FaFilter, FaTimes } from "react-icons/fa";
 import Navbar from "../components/Navbar";
 import "./Products.css";
-import { API_URL } from "../config";
+import { API_URL } from "../config.js";
 
 export default function Products() {
   const [searchParams, setSearchParams] = useSearchParams();

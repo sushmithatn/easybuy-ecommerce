@@ -4,7 +4,7 @@ import { FaTrash, FaShoppingCart, FaArrowRight, FaTag } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import "./Cart.css";
-import { API_URL } from "../config";
+import { API_URL } from "../config.js";
 
 export default function Cart() {
   const [cart, setCart] = useState([]);

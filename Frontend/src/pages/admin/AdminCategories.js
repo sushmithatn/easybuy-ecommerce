@@ -3,7 +3,7 @@ import axios from "axios";
 import AdminNavbar from "../../components/AdminNavbar";
 import "./AdminCategories.css";
 import { FaTrash, FaPlus, FaTag } from "react-icons/fa";
-import { API_URL } from "../../config";
+import { API_URL } from "../../config.js";
 
 export default function AdminCategories() {
   const [categories, setCategories] = useState([]);

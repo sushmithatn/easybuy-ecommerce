@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import Navbar from "../components/Navbar";
 import "./Orders.css";
-import { API_URL } from "../config";
+import { API_URL } from "../config.js";
 export default function Orders() {
   const [orders, setOrders] = useState([]);
   const token = localStorage.getItem("token");

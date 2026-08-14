@@ -4,7 +4,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { FaHeart, FaShoppingCart, FaStar, FaChevronRight, FaRegStar, FaExchangeAlt } from "react-icons/fa";
 import Navbar from "../components/Navbar";
 import "./ProductDetails.css";
-import { API_URL } from "../config";
+import { API_URL } from "../config.js";
 
 export default function ProductDetails() {
   const { id } = useParams();

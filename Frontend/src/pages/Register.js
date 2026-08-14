@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { FaUser, FaLock, FaEnvelope, FaIdCard, FaPhone, FaMoon, FaSun, FaCheck, FaTimes } from "react-icons/fa";
 import { ThemeContext } from "../context/ThemeContext";
 import "./Register.css";
-import { API_URL } from "../config";
+import { API_URL } from "../config.js";
 
 export default function Register() {
   const [username, setUsername] = useState("");

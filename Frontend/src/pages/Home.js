@@ -4,7 +4,7 @@ import axios from "axios";
 import { FaArrowRight, FaStar, FaEnvelope, FaHeadphones, FaShippingFast, FaUndo, FaLock } from "react-icons/fa";
 import Navbar from "../components/Navbar";
 import "./Home.css";
-import { API_URL } from "../config";
+import { API_URL } from "../config.js";
 export default function Home() {
   const navigate = useNavigate();
   const [trending, setTrending] = useState([]);
