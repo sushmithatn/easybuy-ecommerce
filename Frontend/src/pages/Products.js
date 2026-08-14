@@ -379,7 +379,21 @@ export default function Products() {
           ) : (
             <div className="no-products-view animate-fade">
               <h2>No products found</h2>
-              <p>We couldn't find matches for your current filter settings. Try resetting parameters.</p>
+              <p>We couldn't find matches for your current filter settings or the server is warming up.</p>
+              <div style={{ marginTop: '16px', display: 'flex', gap: '12px', justifyContent: 'center' }}>
+                <button 
+                  className="btn-premium" 
+                  onClick={() => {
+                    setSelectedCategory("");
+                    setSearchQuery("");
+                    setPriceRange("");
+                    setSearchParams({});
+                    loadProducts();
+                  }}
+                >
+                  Reset Filters & Reload
+                </button>
+              </div>
             </div>
           )}
 

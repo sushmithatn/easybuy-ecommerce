@@ -47,11 +47,19 @@ public class ProductController {
             @RequestParam(required = false) Double minPrice,
             @RequestParam(required = false) Double maxPrice
     ) {
-        Sort sort = direction.equalsIgnoreCase("desc") ? Sort.by(sortBy).descending() : Sort.by(sortBy).ascending();
-        Pageable pageable = PageRequest.of(page, size, sort);
-
         // Adjust empty or whitespace search terms
         String searchTerm = (search != null && !search.trim().isEmpty()) ? search.trim() : null;
+
+        // Map camelCase fields to snake_case DB column names for native SQL sorting
+        String dbSortBy = sortBy;
+        if ("averageRating".equalsIgnoreCase(sortBy)) {
+            dbSortBy = "average_rating";
+        } else if ("discountPercentage".equalsIgnoreCase(sortBy)) {
+            dbSortBy = "discount_percentage";
+        }
+
+        Sort sort = direction.equalsIgnoreCase("desc") ? Sort.by(dbSortBy).descending() : Sort.by(dbSortBy).ascending();
+        Pageable pageable = PageRequest.of(page, size, sort);
 
         Page<Product> productsPage = productRepository.filterProducts(
                 categoryId, searchTerm, minPrice, maxPrice, pageable
