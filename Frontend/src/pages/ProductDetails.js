@@ -50,7 +50,7 @@ export default function ProductDetails() {
     if (otherIds.length > 0) {
       Promise.all(
         otherIds.map(oId => 
-          axios.get(`${API_URL}/api/products/${id}`).then(res => res.data).catch(() => null)
+          axios.get(`${API_URL}/api/products/${oId}`).then(res => res.data).catch(() => null)
         )
       ).then(results => {
         setRecentProducts(results.filter(r => r !== null));
@@ -58,7 +58,7 @@ export default function ProductDetails() {
     } else {
       setRecentProducts([]);
     }
-  }, []);
+  }, [id]);
 
   const loadProductData = useCallback(async () => {
     setLoading(true);
