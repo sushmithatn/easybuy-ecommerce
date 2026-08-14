@@ -41,7 +41,7 @@ export default function Orders() {
 
     try {
       const res = await axios.put(
-       `${API_URL}/api/orders/${orderId}/cancel`
+       `${API_URL}/api/orders/${orderId}/cancel`,
         {},
         {
           headers: {

@@ -68,7 +68,7 @@ axios.delete(`${API_URL}/api/cart/${id}`, {
 
     try {
       const res = await axios.get(
-`${API_URL}/api/coupons/validate/${promoCode.trim().toUpperCase()}`
+`${API_URL}/api/coupons/validate/${promoCode.trim().toUpperCase()}`,
         { headers: { Authorization: `Bearer ${token}` } }
       );
       setDiscountPercentage(res.data.discountPercentage);
