@@ -3,14 +3,13 @@ import axios from "axios";
 import { FaHeart, FaChevronRight, FaTrash } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
+import { API_URL } from "../config.js";
 import "./Wishlist.css";
 
 export default function Wishlist() {
   const [items, setItems] = useState([]);
   const token = localStorage.getItem("token");
   const navigate = useNavigate();
-
-  const API_URL = process.env.REACT_APP_API_URL;
 
   const loadWishlist = useCallback(() => {
     if (!token) {

@@ -36,9 +36,7 @@ export default function Products() {
 
   // Fetch Categories
   useEffect(() => {
-axios.get(axios.get(`${API_URL}/api/categories`)
-
-)
+    axios.get(`${API_URL}/api/categories`)
       .then(res => setCategories(res.data))
       .catch(err => console.error("Error loading categories:", err));
   }, []);
@@ -52,9 +50,9 @@ axios.get(axios.get(`${API_URL}/api/categories`)
 
   // Load Products
   const loadProducts = useCallback(() => {
-   setLoading(true);
+    setLoading(true);
 
-   let url = `${process.env.REACT_APP_API_URL}/api/products?page=${currentPage}&size=12&sortBy=${sortBy}&direction=${sortDir}`;
+    let url = `${API_URL}/api/products?page=${currentPage}&size=12&sortBy=${sortBy}&direction=${sortDir}`;
 
    if (selectedCategory) url += `&categoryId=${selectedCategory}`;
    if (searchQuery) url += `&search=${encodeURIComponent(searchQuery)}`;
