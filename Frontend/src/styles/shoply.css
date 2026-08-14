@@ -59,11 +59,11 @@ body {
 
 .product-card img {
   width: 100%;
-  height: 180px;
+  height: 280px;
   object-fit: contain;
   border-radius: 14px;
   background: #e5ecf6;
-  padding: 15px;
+  padding: 8px;
 }
 
 .product-card h3 {
