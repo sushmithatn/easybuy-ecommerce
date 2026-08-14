@@ -29,4 +29,6 @@ public class PaymentRequest {
 
     @NotBlank(message = "Phone number is required")
     private String shippingPhone;
+
+    private String couponCode;
 }

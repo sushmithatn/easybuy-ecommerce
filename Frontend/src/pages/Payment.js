@@ -54,17 +54,25 @@ export default function Payment() {
   const [ifscCode, setIfscCode] = useState("");
   const [netbankingAmount, setNetbankingAmount] = useState("");
 
-  // Order summary and success states
+  // Order summary, coupon discount, and success states
   const [cartTotal, setCartTotal] = useState(0);
+  const [appliedCoupon, setAppliedCoupon] = useState(null);
   const [isProcessing, setIsProcessing] = useState(false);
   const [placedOrder, setPlacedOrder] = useState(null);
 
-  // Fetch saved addresses & cart total from correct backend API
+  // Fetch saved addresses & cart total with coupon discount applied
   useEffect(() => {
     if (!token || !username) {
       alert("Please login again");
       navigate("/login");
       return;
+    }
+
+    // Check for saved coupon from cart page
+    const savedCode = localStorage.getItem("appliedCouponCode");
+    const savedDiscountPerc = parseFloat(localStorage.getItem("appliedCouponDiscount") || "0");
+    if (savedCode && savedDiscountPerc > 0) {
+      setAppliedCoupon({ code: savedCode, percentage: savedDiscountPerc });
     }
 
     axios.get(`${API_URL}/api/users/addresses`, {
@@ -73,16 +81,21 @@ export default function Payment() {
     .then(res => setSavedAddresses(res.data))
     .catch(err => console.error("Error loading addresses:", err));
 
-    // Fetch user cart directly from GET /api/cart
+    // Fetch cart items
     axios.get(`${API_URL}/api/cart`, {
       headers: { Authorization: `Bearer ${token}` }
     })
     .then(res => {
       const items = res.data || [];
       const subtotal = items.reduce((sum, i) => sum + (i.price || i.product?.price || 0) * i.quantity, 0);
+      
+      // Apply coupon discount if present
+      const discountAmount = subtotal * (savedDiscountPerc / 100);
+      const discountedSubtotal = subtotal - discountAmount;
+
       const shipping = subtotal > 5000 || subtotal === 0 ? 0 : 150;
-      const tax = subtotal * 0.18;
-      const calculatedTotal = Math.round(subtotal + shipping + tax);
+      const tax = discountedSubtotal * 0.18;
+      const calculatedTotal = Math.round(discountedSubtotal + shipping + tax);
       
       setCartTotal(calculatedTotal);
       const strTotal = calculatedTotal ? String(calculatedTotal) : "";
@@ -93,7 +106,7 @@ export default function Payment() {
     .catch(err => console.error("Error loading cart total:", err));
   }, [token, username, navigate]);
 
-  // Keep amounts in sync with cart total if it updates
+  // Keep amounts synchronized with cartTotal
   useEffect(() => {
     if (cartTotal > 0) {
       const strTotal = String(cartTotal);
@@ -162,6 +175,8 @@ export default function Payment() {
       if (paymentMethod === "NETBANKING") displayMethodName = `Net Banking (${selectedBank} Bank - Acc: ${bankAccountNo}, IFSC: ${ifscCode}, ₹${netbankingAmount || cartTotal})`;
       if (paymentMethod === "COD") displayMethodName = "Cash on Delivery";
 
+      const couponCode = localStorage.getItem("appliedCouponCode");
+
       const payload = {
         paymentMethod: displayMethodName,
         shippingStreet: street,
@@ -169,7 +184,8 @@ export default function Payment() {
         shippingState: state,
         shippingZipCode: zipCode,
         shippingCountry: country,
-        shippingPhone: phoneNumber
+        shippingPhone: phoneNumber,
+        couponCode: couponCode || null
       };
 
       const res = await axios.post(
@@ -182,6 +198,10 @@ export default function Payment() {
           }
         }
       );
+
+      // Clear applied coupon from storage upon successful order placement
+      localStorage.removeItem("appliedCouponCode");
+      localStorage.removeItem("appliedCouponDiscount");
 
       setPlacedOrder(res.data);
       setStep(3); // Navigate to Success Screen
@@ -339,9 +359,16 @@ export default function Payment() {
 
               <div className="payment-header-row">
                 <h2 className="payment-heading">💳 Select Payment Method</h2>
-                {cartTotal > 0 && (
-                  <span className="pay-amount-badge">Total: ₹{cartTotal.toLocaleString('en-IN')}</span>
-                )}
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  {appliedCoupon && (
+                    <span className="pay-amount-badge" style={{ backgroundColor: 'rgba(3, 166, 133, 0.1)', color: 'var(--success-color)', borderColor: 'var(--success-color)' }}>
+                      🎉 Coupon Applied ({appliedCoupon.percentage}%)
+                    </span>
+                  )}
+                  {cartTotal > 0 && (
+                    <span className="pay-amount-badge">Total: ₹{cartTotal.toLocaleString('en-IN')}</span>
+                  )}
+                </div>
               </div>
 
               {/* Payment Method Selector Grid */}

@@ -35,6 +35,14 @@ export default function Cart() {
 
   useEffect(() => {
     loadCart();
+
+    const savedCode = localStorage.getItem("appliedCouponCode");
+    const savedDiscount = localStorage.getItem("appliedCouponDiscount");
+    if (savedCode && savedDiscount) {
+      setPromoCode(savedCode);
+      setDiscountPercentage(parseFloat(savedDiscount));
+      setCouponApplied(true);
+    }
   }, [loadCart]);
 
   const increaseQty = (id) => {
@@ -83,11 +91,15 @@ export default function Cart() {
 
     try {
       const res = await axios.get(
-`${API_URL}/api/coupons/validate/${promoCode.trim().toUpperCase()}`,
+        `${API_URL}/api/coupons/validate/${promoCode.trim().toUpperCase()}`,
         { headers: { Authorization: `Bearer ${token}` } }
       );
-      setDiscountPercentage(res.data.discountPercentage);
+      const code = promoCode.trim().toUpperCase();
+      const perc = res.data.discountPercentage;
+      setDiscountPercentage(perc);
       setCouponApplied(true);
+      localStorage.setItem("appliedCouponCode", code);
+      localStorage.setItem("appliedCouponDiscount", String(perc));
     } catch (err) {
       setCouponError(err.response?.data?.message || "Invalid coupon code");
     }
