@@ -41,10 +41,12 @@ export default function Payment() {
   const [cardExpiry, setCardExpiry] = useState("");
   const [cardCvv, setCardCvv] = useState("");
   const [cardName, setCardName] = useState("");
+  const [cardAmount, setCardAmount] = useState("");
 
   // UPI details
   const [upiId, setUpiId] = useState("");
   const [selectedUpiApp, setSelectedUpiApp] = useState("Google Pay");
+  const [upiAmount, setUpiAmount] = useState("");
 
   // Netbanking details
   const [selectedBank, setSelectedBank] = useState("SBI");
@@ -81,7 +83,10 @@ export default function Payment() {
       const tax = subtotal * 0.18;
       const calculatedTotal = Math.round(subtotal + shipping + tax);
       setCartTotal(calculatedTotal);
-      setNetbankingAmount(calculatedTotal ? String(calculatedTotal) : "");
+      const strTotal = calculatedTotal ? String(calculatedTotal) : "";
+      setCardAmount(strTotal);
+      setUpiAmount(strTotal);
+      setNetbankingAmount(strTotal);
     })
     .catch(err => console.error("Error loading cart total:", err));
   }, [token, username, navigate]);
@@ -140,9 +145,9 @@ export default function Payment() {
 
     try {
       let displayMethodName = "Card Payment";
-      if (paymentMethod === "CARD") displayMethodName = "Credit/Debit Card";
-      if (paymentMethod === "UPI") displayMethodName = `UPI (${selectedUpiApp} - ${upiId})`;
-      if (paymentMethod === "NETBANKING") displayMethodName = `Net Banking (${selectedBank} Bank - Acc: ${bankAccountNo}, IFSC: ${ifscCode})`;
+      if (paymentMethod === "CARD") displayMethodName = `Credit/Debit Card (₹${cardAmount})`;
+      if (paymentMethod === "UPI") displayMethodName = `UPI (${selectedUpiApp} - ${upiId}, ₹${upiAmount})`;
+      if (paymentMethod === "NETBANKING") displayMethodName = `Net Banking (${selectedBank} Bank - Acc: ${bankAccountNo}, IFSC: ${ifscCode}, ₹${netbankingAmount})`;
       if (paymentMethod === "COD") displayMethodName = "Cash on Delivery";
 
       const payload = {
@@ -422,6 +427,18 @@ export default function Payment() {
                         />
                       </div>
                     </div>
+
+                    <div className="input-field-group">
+                      <label>Amount (₹)</label>
+                      <input
+                        type="text"
+                        className="premium-input-box"
+                        placeholder="4278"
+                        value={cardAmount}
+                        onChange={(e) => setCardAmount(e.target.value)}
+                        required
+                      />
+                    </div>
                   </div>
                 )}
 
@@ -452,6 +469,18 @@ export default function Payment() {
                         placeholder="example@upi or mobile@gpay"
                         value={upiId}
                         onChange={(e) => setUpiId(e.target.value)}
+                        required
+                      />
+                    </div>
+
+                    <div className="input-field-group">
+                      <label>Amount (₹)</label>
+                      <input
+                        type="text"
+                        className="premium-input-box"
+                        placeholder="4278"
+                        value={upiAmount}
+                        onChange={(e) => setUpiAmount(e.target.value)}
                         required
                       />
                     </div>
@@ -507,7 +536,7 @@ export default function Payment() {
                         <input
                           type="text"
                           className="premium-input-box"
-                          placeholder="4278.82"
+                          placeholder="4278"
                           value={netbankingAmount}
                           onChange={(e) => setNetbankingAmount(e.target.value)}
                           required
