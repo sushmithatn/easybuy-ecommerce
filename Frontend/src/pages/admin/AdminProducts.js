@@ -37,38 +37,21 @@ export default function AdminProducts() {
 
   const token = localStorage.getItem("token");
 
-  const handleFileUpload = async (e) => {
+  const handleFileUpload = (e) => {
     const file = e.target.files[0];
     if (!file) return;
 
     setUploadingImage(true);
-    const formData = new FormData();
-    formData.append("file", file);
-
-    try {
-      const res = await axios.post(`${API_URL}/api/upload/image`, formData, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "multipart/form-data",
-        },
-      });
-
-      let uploadedUrl = res.data.imageUrl;
-      if (uploadedUrl && !uploadedUrl.startsWith("http")) {
-        uploadedUrl = `${API_URL}${uploadedUrl}`;
-      }
-      setImageUrl(uploadedUrl);
-    } catch (err) {
-      console.error("Upload failed, converting locally:", err);
-      // Fallback: Read as Data URL (Base64) so file selection works reliably in all environments
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setImageUrl(reader.result);
-      };
-      reader.readAsDataURL(file);
-    } finally {
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setImageUrl(reader.result);
       setUploadingImage(false);
-    }
+    };
+    reader.onerror = () => {
+      alert("Failed to read image file");
+      setUploadingImage(false);
+    };
+    reader.readAsDataURL(file);
   };
 
 
@@ -396,7 +379,7 @@ export default function AdminProducts() {
                     {products.map(p => (
                       <tr key={p.id}>
                         <td>
-                          <img src={p.imageUrl} alt={p.name} className="admin-prod-thumb" />
+                          <img src={formatImageUrl(p.imageUrl)} alt={p.name} className="admin-prod-thumb" />
                         </td>
                         <td>
                           <div className="prod-meta-cell">

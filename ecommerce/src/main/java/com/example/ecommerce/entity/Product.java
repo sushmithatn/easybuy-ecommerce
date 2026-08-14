@@ -30,6 +30,7 @@ private String description;
     @Column(nullable = false)
     private double price;
 
+    @Column(columnDefinition = "TEXT")
     private String imageUrl;
 
     private String brand;

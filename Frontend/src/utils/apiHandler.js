@@ -1,7 +1,8 @@
 import { API_URL } from "../config";
 
 export const formatImageUrl = (url) => {
-  if (!url) return "https://via.placeholder.com/400x400?text=No+Image";
+  if (!url) return "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=500&q=80";
+  if (url.startsWith("data:")) return url;
   if (url.startsWith("/")) {
     return `${API_URL}${url}`;
   }
