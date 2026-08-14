@@ -5,7 +5,7 @@ import AdminNavbar from "../../components/AdminNavbar";
 import "./AdminProducts.css";
 import { FaTrash, FaEdit, FaPlus, FaSave, FaTimes, FaCloudUploadAlt, FaLink, FaImage } from "react-icons/fa";
 import { API_URL } from "../../config.js";
-import { handleApiError } from "../../utils/apiHandler";
+import { handleApiError, formatImageUrl } from "../../utils/apiHandler";
 
 
 export default function AdminProducts() {
