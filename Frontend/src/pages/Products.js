@@ -22,10 +22,11 @@ export default function Products() {
   // Filter states
   const [selectedCategory, setSelectedCategory] = useState(searchParams.get("categoryId") || "");
   const [searchQuery, setSearchQuery] = useState(searchParams.get("search") || "");
-  const [priceRange, setPriceRange] = useState(searchParams.get("maxPrice") || 1000000);
+  const [priceRange, setPriceRange] = useState(searchParams.get("maxPrice") || "");
   const [sortBy, setSortBy] = useState(searchParams.get("sortBy") || "id");
   const [sortDir, setSortDir] = useState(searchParams.get("sortDir") || "desc");
   const [currentPage, setCurrentPage] = useState(parseInt(searchParams.get("page")) || 0);
+
 
 
   // Mobile sidebar filter toggle
@@ -51,8 +52,10 @@ export default function Products() {
   useEffect(() => {
     setSelectedCategory(searchParams.get("categoryId") || "");
     setSearchQuery(searchParams.get("search") || "");
+    setPriceRange(searchParams.get("maxPrice") || "");
     setCurrentPage(parseInt(searchParams.get("page")) || 0);
   }, [searchParams]);
+
 
   // Load Products
   const loadProducts = useCallback(() => {
@@ -62,7 +65,8 @@ export default function Products() {
 
     if (selectedCategory) url += `&categoryId=${selectedCategory}`;
     if (searchQuery) url += `&search=${encodeURIComponent(searchQuery)}`;
-    if (priceRange) url += `&maxPrice=${priceRange}`;
+    if (priceRange && priceRange !== "") url += `&maxPrice=${priceRange}`;
+
 
     axios.get(url)
       .then((res) => {
@@ -96,14 +100,28 @@ export default function Products() {
   };
 
   const handlePriceChange = (e) => {
-    setPriceRange(e.target.value);
+    const val = e.target.value;
+    setPriceRange(val);
     setCurrentPage(0);
-    setSearchParams({
-      ...Object.fromEntries(searchParams),
-      maxPrice: e.target.value,
-      page: 0
-    });
+    const newParams = Object.fromEntries(searchParams);
+    if (val) {
+      newParams.maxPrice = val;
+    } else {
+      delete newParams.maxPrice;
+    }
+    newParams.page = 0;
+    setSearchParams(newParams);
   };
+
+  const clearPriceFilter = () => {
+    setPriceRange("");
+    setCurrentPage(0);
+    const newParams = Object.fromEntries(searchParams);
+    delete newParams.maxPrice;
+    newParams.page = 0;
+    setSearchParams(newParams);
+  };
+
 
   const handleSortChange = (e) => {
     const [field, dir] = e.target.value.split("-");
@@ -231,23 +249,35 @@ export default function Products() {
           </div>
 
           <div className="filter-group">
-            <h4>Price Limit (Max)</h4>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+              <h4 style={{ margin: 0 }}>Price Limit (Max)</h4>
+              {priceRange && (
+                <button 
+                  type="button" 
+                  onClick={clearPriceFilter}
+                  style={{ background: 'none', border: 'none', color: '#ec4899', fontSize: '11px', cursor: 'pointer', fontWeight: 600 }}
+                >
+                  Reset
+                </button>
+              )}
+            </div>
             <div className="price-slider-box">
               <input 
                 type="range" 
                 min="500" 
-                max="25000" 
-                step="500"
-                value={priceRange} 
+                max="10000000" 
+                step="5000"
+                value={priceRange || 10000000} 
                 onChange={handlePriceChange} 
               />
               <div className="price-slider-labels">
                 <span>₹500</span>
-                <b>₹{priceRange}</b>
-                <span>₹25000</span>
+                <b>{priceRange ? `₹${Number(priceRange).toLocaleString('en-IN')}` : "All Prices"}</b>
+                <span>₹1 Cr</span>
               </div>
             </div>
           </div>
+
         </aside>
 
         {/* Catalog Main Content */}
