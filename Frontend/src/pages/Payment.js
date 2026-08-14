@@ -175,6 +175,11 @@ export default function Payment() {
       if (paymentMethod === "NETBANKING") displayMethodName = `Net Banking (${selectedBank} Bank - Acc: ${bankAccountNo}, IFSC: ${ifscCode}, ₹${netbankingAmount || cartTotal})`;
       if (paymentMethod === "COD") displayMethodName = "Cash on Delivery";
 
+      let paidAmt = cartTotal;
+      if (paymentMethod === "CARD") paidAmt = parseFloat(cardAmount) || cartTotal;
+      if (paymentMethod === "UPI") paidAmt = parseFloat(upiAmount) || cartTotal;
+      if (paymentMethod === "NETBANKING") paidAmt = parseFloat(netbankingAmount) || cartTotal;
+
       const couponCode = localStorage.getItem("appliedCouponCode");
 
       const payload = {
@@ -185,7 +190,8 @@ export default function Payment() {
         shippingZipCode: zipCode,
         shippingCountry: country,
         shippingPhone: phoneNumber,
-        couponCode: couponCode || null
+        couponCode: couponCode || null,
+        amount: paidAmt
       };
 
       const res = await axios.post(

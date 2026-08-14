@@ -31,4 +31,6 @@ public class PaymentRequest {
     private String shippingPhone;
 
     private String couponCode;
+
+    private Double amount;
 }

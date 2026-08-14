@@ -82,23 +82,24 @@ public class OrderService {
         double discount = 0.0;
         Coupon coupon = null;
         if (request.getCouponCode() != null && !request.getCouponCode().trim().isEmpty()) {
-            coupon = couponRepository.findByCode(request.getCouponCode().trim())
-                    .orElseThrow(() -> new ResourceNotFoundException("Coupon not found"));
+            String code = request.getCouponCode().trim();
+            coupon = couponRepository.findByCodeIgnoreCase(code).orElse(null);
 
-            if (!coupon.isActive()) {
-                throw new BadRequestException("Coupon is inactive");
+            if (coupon != null && coupon.isActive() && (coupon.getExpirationDate() == null || !coupon.getExpirationDate().isBefore(LocalDate.now()))) {
+                discount = subtotal * (coupon.getDiscountPercentage() / 100.0);
             }
-            if (coupon.getExpirationDate() != null && coupon.getExpirationDate().isBefore(LocalDate.now())) {
-                throw new BadRequestException("Coupon has expired");
-            }
-
-            discount = subtotal * (coupon.getDiscountPercentage() / 100.0);
         }
 
         // Calculate Tax & Shipping
-        double tax = (subtotal - discount) * 0.18; // 18% GST/Tax
+        double subtotalAfterDiscount = subtotal - discount;
+        double tax = subtotalAfterDiscount * 0.18; // 18% GST/Tax
         double shipping = subtotal > 5000 ? 0.0 : 150.0; // Free shipping over ₹5000, else ₹150
-        double total = (subtotal - discount) + tax + shipping;
+        double total = Math.round(subtotalAfterDiscount + tax + shipping);
+
+        // Honor explicit paid amount from payment form if provided
+        if (request.getAmount() != null && request.getAmount() > 0) {
+            total = request.getAmount();
+        }
 
         Order order = new Order();
         order.setUser(user);
