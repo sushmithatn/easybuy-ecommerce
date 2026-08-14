@@ -4,12 +4,12 @@ import com.example.ecommerce.dto.ProductDTO;
 import com.example.ecommerce.entity.Category;
 import com.example.ecommerce.entity.Product;
 import com.example.ecommerce.exception.ResourceNotFoundException;
-import com.example.ecommerce.repository.CategoryRepository;
-import com.example.ecommerce.repository.ProductRepository;
+import com.example.ecommerce.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import jakarta.validation.Valid;
@@ -28,11 +28,23 @@ public class ProductController {
 
     private final ProductRepository productRepository;
     private final CategoryRepository categoryRepository;
+    private final CartRepository cartRepository;
+    private final WishlistRepository wishlistRepository;
+    private final ReviewRepository reviewRepository;
+    private final OrderItemRepository orderItemRepository;
 
     public ProductController(ProductRepository productRepository,
-                             CategoryRepository categoryRepository) {
+                             CategoryRepository categoryRepository,
+                             CartRepository cartRepository,
+                             WishlistRepository wishlistRepository,
+                             ReviewRepository reviewRepository,
+                             OrderItemRepository orderItemRepository) {
         this.productRepository = productRepository;
         this.categoryRepository = categoryRepository;
+        this.cartRepository = cartRepository;
+        this.wishlistRepository = wishlistRepository;
+        this.reviewRepository = reviewRepository;
+        this.orderItemRepository = orderItemRepository;
     }
 
     // ✅ PUBLIC PAGINATED & FILTERED SEARCH
@@ -106,13 +118,21 @@ public class ProductController {
         return ResponseEntity.ok(convertToDto(saved));
     }
 
-    // ✅ ADMIN - DELETE PRODUCT
+    // ✅ ADMIN - DELETE PRODUCT WITH FOREIGN KEY CLEANUP
     @DeleteMapping("/{id}")
+    @Transactional
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> deleteProduct(@PathVariable Long id) {
         if (!productRepository.existsById(id)) {
             throw new ResourceNotFoundException("Product not found");
         }
+
+        // Clean up references in dependent tables before deleting product
+        cartRepository.deleteByProductId(id);
+        wishlistRepository.deleteByProductId(id);
+        reviewRepository.deleteByProductId(id);
+        orderItemRepository.nullifyProductReference(id);
+
         productRepository.deleteById(id);
         return ResponseEntity.noContent().build();
     }
