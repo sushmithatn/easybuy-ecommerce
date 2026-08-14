@@ -194,79 +194,180 @@
   color: var(--primary-color);
 }
 
+.payment-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
 .payment-heading {
   font-size: 20px;
   font-weight: 800;
   color: var(--text-primary);
-  margin-bottom: 20px;
+  margin: 0;
 }
 
-.payment-options {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  margin-bottom: 24px;
-}
-
-.payment-radio-label {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 14px 18px;
-  border: 1px solid var(--border-color);
-  border-radius: var(--border-radius-md);
-  background-color: var(--bg-primary);
-  cursor: pointer;
-  transition: all var(--transition-fast);
-  font-weight: 600;
-}
-
-.payment-radio-label:hover {
-  border-color: var(--primary-color);
-}
-
-.payment-radio-label input[type="radio"] {
-  accent-color: var(--primary-color);
-  width: 18px;
-  height: 18px;
-}
-
-/* Card details form fields */
-.card-fields-form {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  margin-bottom: 24px;
-}
-
-.card-fields-form input,
-.upi-input-box {
-  width: 100%;
-  padding: 12px 16px;
-  border: 1px solid var(--border-color);
-  border-radius: var(--border-radius-md);
-  background-color: var(--bg-primary);
-  color: var(--text-primary);
+.pay-amount-badge {
+  background: var(--primary-glow);
+  color: var(--primary-color);
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-weight: 800;
   font-size: 14px;
-  outline: none;
+  border: 1px solid var(--primary-color);
+}
+
+/* Payment Methods Selector Grid */
+.payment-methods-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+@media (max-width: 550px) {
+  .payment-methods-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.method-tab-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 16px 10px;
+  background-color: var(--bg-primary);
+  border: 2px solid var(--border-color);
+  border-radius: var(--border-radius-md);
+  color: var(--text-secondary);
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
   transition: all var(--transition-normal);
 }
 
-.card-fields-form input:focus,
-.upi-input-box:focus {
-  border-color: var(--primary-color);
-  background-color: var(--bg-secondary);
-  box-shadow: 0 0 0 3px var(--primary-glow);
+.method-tab-icon {
+  font-size: 22px;
 }
 
-.card-fields-row {
+.method-tab-card:hover {
+  border-color: var(--primary-color);
+  color: var(--text-primary);
+  transform: translateY(-2px);
+}
+
+.method-tab-card.active {
+  border-color: var(--primary-color);
+  background-color: var(--bg-secondary);
+  color: var(--primary-color);
+  box-shadow: 0 4px 12px var(--primary-glow);
+}
+
+/* Payment Subforms */
+.payment-subform {
   display: flex;
-  gap: 12px;
+  flex-direction: column;
+  gap: 18px;
+  background-color: var(--bg-primary);
+  padding: 20px;
+  border-radius: var(--border-radius-md);
+  border: 1px solid var(--border-color);
+  margin-bottom: 20px;
+}
+
+.card-subform,
+.upi-subform,
+.netbanking-subform {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+/* UPI App Pills */
+.upi-app-pills {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 6px;
+}
+
+.upi-pill-btn {
+  padding: 8px 16px;
+  border-radius: 20px;
+  border: 1px solid var(--border-color);
+  background-color: var(--bg-secondary);
+  color: var(--text-primary);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.upi-pill-btn.active,
+.upi-pill-btn:hover {
+  border-color: var(--primary-color);
+  background-color: var(--primary-color);
+  color: white;
+}
+
+/* Bank Tiles Grid */
+.banks-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+  gap: 10px;
+  margin-top: 6px;
+}
+
+.bank-tile-btn {
+  padding: 12px;
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-md);
+  background-color: var(--bg-secondary);
+  color: var(--text-primary);
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.bank-tile-btn.active,
+.bank-tile-btn:hover {
+  border-color: var(--primary-color);
+  background-color: var(--primary-color);
+  color: white;
+}
+
+/* COD info box */
+.cod-info-box {
+  padding: 14px;
+  background-color: rgba(99, 102, 241, 0.08);
+  border-left: 4px solid var(--primary-color);
+  border-radius: var(--border-radius-md);
+  font-size: 14px;
+  color: var(--text-primary);
+  line-height: 1.5;
+}
+
+/* SSL Note */
+.secure-badge-note {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-size: 12px;
+  color: var(--text-muted);
+  font-weight: 600;
+  margin-top: 4px;
 }
 
 /* Pay Now override */
 .pay-btn-primary {
-  margin-top: 0;
+  margin-top: 6px;
 }
 
 /* Success screen animations and styles */

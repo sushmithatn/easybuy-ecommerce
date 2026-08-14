@@ -1,26 +1,19 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import { FaChevronRight, FaArrowLeft } from "react-icons/fa";
+import { 
+  FaChevronRight, 
+  FaArrowLeft, 
+  FaCreditCard, 
+  FaMobileAlt, 
+  FaUniversity, 
+  FaMoneyBillWave,
+  FaCheckCircle,
+  FaLock
+} from "react-icons/fa";
 import Navbar from "../components/Navbar";
 import "./Payment.css";
 import { API_URL } from "../config.js";
-
-// Helper to dynamically load the Razorpay checkout script
-const loadRazorpayScript = () => {
-  return new Promise((resolve) => {
-    if (window.Razorpay) {
-      resolve(true);
-      return;
-    }
-    const script = document.createElement("script");
-    script.src = "https://checkout.razorpay.com/v1/checkout.js";
-    script.async = true;
-    script.onload = () => resolve(true);
-    script.onerror = () => resolve(false);
-    document.body.appendChild(script);
-  });
-};
 
 export default function Payment() {
   const navigate = useNavigate();
@@ -40,13 +33,28 @@ export default function Payment() {
   // Saved Addresses
   const [savedAddresses, setSavedAddresses] = useState([]);
 
-  // Payment Form States
-  const [paymentMethod, setPaymentMethod] = useState("RAZORPAY");
+  // Payment Form States: "CARD" | "UPI" | "NETBANKING" | "COD"
+  const [paymentMethod, setPaymentMethod] = useState("CARD");
 
-  // Order success state
+  // Card details
+  const [cardNumber, setCardNumber] = useState("");
+  const [cardExpiry, setCardExpiry] = useState("");
+  const [cardCvv, setCardCvv] = useState("");
+  const [cardName, setCardName] = useState("");
+
+  // UPI details
+  const [upiId, setUpiId] = useState("");
+  const [selectedUpiApp, setSelectedUpiApp] = useState("Google Pay");
+
+  // Netbanking details
+  const [selectedBank, setSelectedBank] = useState("SBI");
+
+  // Order summary and success states
+  const [cartTotal, setCartTotal] = useState(0);
+  const [isProcessing, setIsProcessing] = useState(false);
   const [placedOrder, setPlacedOrder] = useState(null);
 
-  // Fetch saved addresses
+  // Fetch saved addresses & cart total
   useEffect(() => {
     if (!token || !username) {
       alert("Please login again");
@@ -54,11 +62,23 @@ export default function Payment() {
       return;
     }
 
-axios.get(`${API_URL}/api/users/addresses`, {
-        headers: { Authorization: `Bearer ${token}` }
+    axios.get(`${API_URL}/api/users/addresses`, {
+      headers: { Authorization: `Bearer ${token}` }
     })
     .then(res => setSavedAddresses(res.data))
     .catch(err => console.error("Error loading addresses:", err));
+
+    axios.get(`${API_URL}/api/cart/${username}`, {
+      headers: { Authorization: `Bearer ${token}` }
+    })
+    .then(res => {
+      const items = res.data || [];
+      const subtotal = items.reduce((sum, i) => sum + (i.product?.price || 0) * i.quantity, 0);
+      const shipping = subtotal > 5000 || subtotal === 0 ? 0 : 150;
+      const tax = subtotal * 0.18;
+      setCartTotal(Math.round(subtotal + shipping + tax));
+    })
+    .catch(err => console.error("Error loading cart total:", err));
   }, [token, username, navigate]);
 
   const handleSelectAddress = (e) => {
@@ -85,113 +105,81 @@ axios.get(`${API_URL}/api/users/addresses`, {
     setStep(2);
   };
 
-  const handlePayment = async () => {
-    try {
-      if (!token || !username) {
-        alert("Please login again");
+  const handlePaymentSubmit = async (e) => {
+    e.preventDefault();
+
+    if (!token || !username) {
+      alert("Please login again");
+      return;
+    }
+
+    // Input validation based on selected payment method
+    if (paymentMethod === "CARD") {
+      if (!cardNumber || !cardExpiry || !cardCvv || !cardName) {
+        alert("Please enter all card details 💳");
         return;
       }
-
-      if (paymentMethod === "COD") {
-        const payload = {
-          paymentMethod: "COD",
-          shippingStreet: street,
-          shippingCity: city,
-          shippingState: state,
-          shippingZipCode: zipCode,
-          shippingCountry: country,
-          shippingPhone: phoneNumber
-        };
-
-        const res = await axios.post(
-`${API_URL}/api/orders/pay/${username}`,
-          payload,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-              "Content-Type": "application/json"
-            }
-          }
-        );
-
-        setPlacedOrder(res.data);
-        setStep(3); // Go to Success Screen
-      } else {
-        const isLoaded = await loadRazorpayScript();
-        if (!isLoaded) {
-          alert("Razorpay SDK failed to load. Please check your internet connection.");
-          return;
-        }
-
-        // 1. Create Razorpay Order on Backend
-        const orderRes = await axios.post(
-`${API_URL}/api/orders/razorpay/create`,
-          {},
-          {
-            headers: {
-              Authorization: `Bearer ${token}`
-            }
-          }
-        );
-
-        const { razorpayOrderId, amount, currency, keyId } = orderRes.data;
-
-        // 2. Open Razorpay Checkout modal
-        const options = {
-          key: keyId,
-          amount: amount,
-          currency: currency,
-          name: "EasyBuy E-Commerce",
-          description: "Secure Order Payment",
-          order_id: razorpayOrderId,
-          handler: async function (response) {
-            try {
-              const verifyPayload = {
-                razorpayPaymentId: response.razorpay_payment_id,
-                razorpayOrderId: response.razorpay_order_id,
-                razorpaySignature: response.razorpay_signature,
-                shippingStreet: street,
-                shippingCity: city,
-                shippingState: state,
-                shippingZipCode: zipCode,
-                shippingCountry: country,
-                shippingPhone: phoneNumber
-              };
-
-              const verificationRes = await axios.post(
-`${API_URL}/api/orders/razorpay/verify`,
-                verifyPayload,
-                {
-                  headers: {
-                    Authorization: `Bearer ${token}`,
-                    "Content-Type": "application/json"
-                  }
-                }
-              );
-
-              setPlacedOrder(verificationRes.data);
-              setStep(3); // Success Screen
-            } catch (err) {
-              console.error("Verification error 👉", err);
-              alert(err.response?.data?.message || "Payment verification failed ❌");
-            }
-          },
-          prefill: {
-            name: username,
-            contact: phoneNumber
-          },
-          theme: {
-            color: "#6366f1"
-          }
-        };
-
-        const rzp = new window.Razorpay(options);
-        rzp.open();
+    } else if (paymentMethod === "UPI") {
+      if (!upiId) {
+        alert("Please enter a valid UPI ID 📱");
+        return;
       }
+    }
+
+    setIsProcessing(true);
+
+    try {
+      let displayMethodName = "Card Payment";
+      if (paymentMethod === "CARD") displayMethodName = "Credit/Debit Card";
+      if (paymentMethod === "UPI") displayMethodName = `UPI (${selectedUpiApp} - ${upiId})`;
+      if (paymentMethod === "NETBANKING") displayMethodName = `Net Banking (${selectedBank})`;
+      if (paymentMethod === "COD") displayMethodName = "Cash on Delivery";
+
+      const payload = {
+        paymentMethod: displayMethodName,
+        shippingStreet: street,
+        shippingCity: city,
+        shippingState: state,
+        shippingZipCode: zipCode,
+        shippingCountry: country,
+        shippingPhone: phoneNumber
+      };
+
+      const res = await axios.post(
+        `${API_URL}/api/orders/pay/${username}`,
+        payload,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json"
+          }
+        }
+      );
+
+      setPlacedOrder(res.data);
+      setStep(3); // Navigate to Success Screen
     } catch (error) {
       console.error("PAYMENT ERROR 👉", error.response || error);
-      alert(error.response?.data?.message || "Payment failed ❌");
+      alert(error.response?.data?.message || "Payment processing failed ❌");
+    } finally {
+      setIsProcessing(false);
     }
+  };
+
+  // Format Card Number (adds spaces every 4 digits)
+  const handleCardNumberChange = (e) => {
+    const raw = e.target.value.replace(/\D/g, "").slice(0, 16);
+    const formatted = raw.replace(/(.{4})/g, "$1 ").trim();
+    setCardNumber(formatted);
+  };
+
+  // Format Expiry MM/YY
+  const handleExpiryChange = (e) => {
+    let raw = e.target.value.replace(/\D/g, "").slice(0, 4);
+    if (raw.length >= 3) {
+      raw = raw.slice(0, 2) + "/" + raw.slice(2);
+    }
+    setCardExpiry(raw);
   };
 
   return (
@@ -218,6 +206,7 @@ axios.get(`${API_URL}/api/users/addresses`, {
         </div>
 
         <div className="payment-content-card animate-fade">
+          {/* STEP 1: Shipping Location */}
           {step === 1 && (
             <div className="shipping-section animate-fade">
               <div className="section-header">
@@ -314,67 +303,210 @@ axios.get(`${API_URL}/api/users/addresses`, {
             </div>
           )}
 
+          {/* STEP 2: Simple Online Payment UI */}
           {step === 2 && (
             <div className="payment-section animate-fade">
               <button type="button" className="back-link-btn" onClick={() => setStep(1)}>
                 <FaArrowLeft /> Back to Location
               </button>
 
-              <h2 className="payment-heading">💳 Select Payment Method</h2>
-
-              <div className="payment-options">
-                <label className="payment-radio-label">
-                  <input
-                    type="radio"
-                    value="RAZORPAY"
-                    checked={paymentMethod === "RAZORPAY"}
-                    onChange={(e) => setPaymentMethod(e.target.value)}
-                  />
-                  <span>Online Payment (Razorpay - Card, UPI, Netbanking)</span>
-                </label>
-
-                <label className="payment-radio-label">
-                  <input
-                    type="radio"
-                    value="COD"
-                    checked={paymentMethod === "COD"}
-                    onChange={(e) => setPaymentMethod(e.target.value)}
-                  />
-                  <span>Cash on Delivery</span>
-                </label>
+              <div className="payment-header-row">
+                <h2 className="payment-heading">💳 Select Payment Method</h2>
+                {cartTotal > 0 && (
+                  <span className="pay-amount-badge">Total: ₹{cartTotal.toLocaleString('en-IN')}</span>
+                )}
               </div>
 
-              {paymentMethod === "RAZORPAY" && (
-                <div className="cod-payment-form animate-fade">
-                  <p className="cod-info" style={{ borderLeftColor: "var(--primary-color)" }}>
-                    💳 Secure payment powered by Razorpay. You can pay using Credit/Debit Card, UPI (Google Pay, PhonePe, Paytm), Netbanking, or Wallets.
-                  </p>
-                </div>
-              )}
+              {/* Payment Method Selector Grid */}
+              <div className="payment-methods-grid">
+                <button
+                  type="button"
+                  className={`method-tab-card ${paymentMethod === "CARD" ? "active" : ""}`}
+                  onClick={() => setPaymentMethod("CARD")}
+                >
+                  <FaCreditCard className="method-tab-icon" />
+                  <span>Card</span>
+                </button>
 
-              {paymentMethod === "COD" && (
-                <div className="cod-payment-form animate-fade">
-                  <p className="cod-info">📦 Cash on Delivery is selected. You will pay the delivery executive once the package arrives at your shipping address.</p>
-                </div>
-              )}
+                <button
+                  type="button"
+                  className={`method-tab-card ${paymentMethod === "UPI" ? "active" : ""}`}
+                  onClick={() => setPaymentMethod("UPI")}
+                >
+                  <FaMobileAlt className="method-tab-icon" />
+                  <span>UPI / QR</span>
+                </button>
 
-              <button type="button" className="action-btn-premium pay-btn-primary" onClick={handlePayment}>
-                {paymentMethod === "RAZORPAY" ? "Open Razorpay Checkout" : "Confirm COD Order"}
-              </button>
+                <button
+                  type="button"
+                  className={`method-tab-card ${paymentMethod === "NETBANKING" ? "active" : ""}`}
+                  onClick={() => setPaymentMethod("NETBANKING")}
+                >
+                  <FaUniversity className="method-tab-icon" />
+                  <span>Net Banking</span>
+                </button>
+
+                <button
+                  type="button"
+                  className={`method-tab-card ${paymentMethod === "COD" ? "active" : ""}`}
+                  onClick={() => setPaymentMethod("COD")}
+                >
+                  <FaMoneyBillWave className="method-tab-icon" />
+                  <span>Cash on Delivery</span>
+                </button>
+              </div>
+
+              {/* Sub-form based on selected payment method */}
+              <form onSubmit={handlePaymentSubmit} className="payment-subform animate-fade">
+                {/* 1. Credit / Debit Card */}
+                {paymentMethod === "CARD" && (
+                  <div className="card-subform">
+                    <div className="input-field-group">
+                      <label>Cardholder Name</label>
+                      <input
+                        type="text"
+                        className="premium-input-box"
+                        placeholder="John Doe"
+                        value={cardName}
+                        onChange={(e) => setCardName(e.target.value)}
+                        required
+                      />
+                    </div>
+
+                    <div className="input-field-group">
+                      <label>Card Number</label>
+                      <input
+                        type="text"
+                        className="premium-input-box"
+                        placeholder="4532 1234 5678 9101"
+                        value={cardNumber}
+                        onChange={handleCardNumberChange}
+                        maxLength="19"
+                        required
+                      />
+                    </div>
+
+                    <div className="input-fields-row">
+                      <div className="input-field-group">
+                        <label>Expiry (MM/YY)</label>
+                        <input
+                          type="text"
+                          className="premium-input-box"
+                          placeholder="12/28"
+                          value={cardExpiry}
+                          onChange={handleExpiryChange}
+                          maxLength="5"
+                          required
+                        />
+                      </div>
+                      <div className="input-field-group">
+                        <label>CVV Code</label>
+                        <input
+                          type="password"
+                          className="premium-input-box"
+                          placeholder="123"
+                          value={cardCvv}
+                          onChange={(e) => setCardCvv(e.target.value.replace(/\D/g, "").slice(0, 4))}
+                          maxLength="4"
+                          required
+                        />
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* 2. UPI / QR */}
+                {paymentMethod === "UPI" && (
+                  <div className="upi-subform">
+                    <label style={{ fontSize: '12px', fontWeight: 700, textTransform: 'uppercase', color: 'var(--text-secondary)' }}>
+                      Select Popular App
+                    </label>
+                    <div className="upi-app-pills">
+                      {["Google Pay", "PhonePe", "Paytm", "BHIM UPI"].map((app) => (
+                        <button
+                          key={app}
+                          type="button"
+                          className={`upi-pill-btn ${selectedUpiApp === app ? "active" : ""}`}
+                          onClick={() => setSelectedUpiApp(app)}
+                        >
+                          {app}
+                        </button>
+                      ))}
+                    </div>
+
+                    <div className="input-field-group" style={{ marginTop: '12px' }}>
+                      <label>UPI ID / VPA</label>
+                      <input
+                        type="text"
+                        className="premium-input-box"
+                        placeholder="example@upi or mobile@gpay"
+                        value={upiId}
+                        onChange={(e) => setUpiId(e.target.value)}
+                        required
+                      />
+                    </div>
+                  </div>
+                )}
+
+                {/* 3. Net Banking */}
+                {paymentMethod === "NETBANKING" && (
+                  <div className="netbanking-subform">
+                    <label style={{ fontSize: '12px', fontWeight: 700, textTransform: 'uppercase', color: 'var(--text-secondary)' }}>
+                      Popular Banks
+                    </label>
+                    <div className="banks-grid">
+                      {["SBI", "HDFC", "ICICI", "Axis", "Kotak"].map((bank) => (
+                        <button
+                          key={bank}
+                          type="button"
+                          className={`bank-tile-btn ${selectedBank === bank ? "active" : ""}`}
+                          onClick={() => setSelectedBank(bank)}
+                        >
+                          {bank} Bank
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* 4. Cash on Delivery */}
+                {paymentMethod === "COD" && (
+                  <div className="cod-info-box">
+                    <p>📦 <b>Cash on Delivery</b> selected. You will pay the delivery agent upon receiving your package at your address.</p>
+                  </div>
+                )}
+
+                <div className="secure-badge-note">
+                  <FaLock /> 256-Bit SSL Encrypted & Secured Payment
+                </div>
+
+                <button 
+                  type="submit" 
+                  className="action-btn-premium pay-btn-primary"
+                  disabled={isProcessing}
+                >
+                  {isProcessing ? (
+                    "Processing Order..."
+                  ) : paymentMethod === "COD" ? (
+                    "Confirm COD Order"
+                  ) : (
+                    `Pay ₹${cartTotal > 0 ? cartTotal.toLocaleString('en-IN') : ""} & Complete Order`
+                  )}
+                </button>
+              </form>
             </div>
           )}
 
+          {/* STEP 3: Order Confirmation Success */}
           {step === 3 && (
             <div className="success-section animate-fade">
               <div className="success-animation-container">
-                <div className="checkmark-circle">
-                  <div className="checkmark"></div>
-                </div>
+                <FaCheckCircle style={{ fontSize: '64px', color: 'var(--success-color)' }} />
               </div>
 
               <h2 className="success-title">Order Placed Successfully! 🎉</h2>
               <p className="success-subtitle">
-                Thank you for shopping with us! Your order has been placed and is being processed.
+                Thank you for shopping with us! Your order has been placed and is being prepared.
               </p>
 
               {placedOrder && (
@@ -384,8 +516,8 @@ axios.get(`${API_URL}/api/users/addresses`, {
                     <strong>#{placedOrder.id}</strong>
                   </div>
                   <div className="receipt-row">
-                    <span>Amount Paid:</span>
-                    <strong>₹{placedOrder.totalAmount}</strong>
+                    <span>Total Amount:</span>
+                    <strong>₹{placedOrder.totalAmount?.toLocaleString('en-IN')}</strong>
                   </div>
                   <div className="receipt-row">
                     <span>Payment Method:</span>
