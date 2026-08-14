@@ -59,7 +59,7 @@ export default function Payment() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [placedOrder, setPlacedOrder] = useState(null);
 
-  // Fetch saved addresses & cart total
+  // Fetch saved addresses & cart total from correct backend API
   useEffect(() => {
     if (!token || !username) {
       alert("Please login again");
@@ -73,15 +73,17 @@ export default function Payment() {
     .then(res => setSavedAddresses(res.data))
     .catch(err => console.error("Error loading addresses:", err));
 
-    axios.get(`${API_URL}/api/cart/${username}`, {
+    // Fetch user cart directly from GET /api/cart
+    axios.get(`${API_URL}/api/cart`, {
       headers: { Authorization: `Bearer ${token}` }
     })
     .then(res => {
       const items = res.data || [];
-      const subtotal = items.reduce((sum, i) => sum + (i.product?.price || 0) * i.quantity, 0);
+      const subtotal = items.reduce((sum, i) => sum + (i.price || i.product?.price || 0) * i.quantity, 0);
       const shipping = subtotal > 5000 || subtotal === 0 ? 0 : 150;
       const tax = subtotal * 0.18;
       const calculatedTotal = Math.round(subtotal + shipping + tax);
+      
       setCartTotal(calculatedTotal);
       const strTotal = calculatedTotal ? String(calculatedTotal) : "";
       setCardAmount(strTotal);
@@ -90,6 +92,16 @@ export default function Payment() {
     })
     .catch(err => console.error("Error loading cart total:", err));
   }, [token, username, navigate]);
+
+  // Keep amounts in sync with cart total if it updates
+  useEffect(() => {
+    if (cartTotal > 0) {
+      const strTotal = String(cartTotal);
+      setCardAmount(prev => prev ? prev : strTotal);
+      setUpiAmount(prev => prev ? prev : strTotal);
+      setNetbankingAmount(prev => prev ? prev : strTotal);
+    }
+  }, [cartTotal]);
 
   const handleSelectAddress = (e) => {
     const addrId = e.target.value;
@@ -145,9 +157,9 @@ export default function Payment() {
 
     try {
       let displayMethodName = "Card Payment";
-      if (paymentMethod === "CARD") displayMethodName = `Credit/Debit Card (₹${cardAmount})`;
-      if (paymentMethod === "UPI") displayMethodName = `UPI (${selectedUpiApp} - ${upiId}, ₹${upiAmount})`;
-      if (paymentMethod === "NETBANKING") displayMethodName = `Net Banking (${selectedBank} Bank - Acc: ${bankAccountNo}, IFSC: ${ifscCode}, ₹${netbankingAmount})`;
+      if (paymentMethod === "CARD") displayMethodName = `Credit/Debit Card (₹${cardAmount || cartTotal})`;
+      if (paymentMethod === "UPI") displayMethodName = `UPI (${selectedUpiApp} - ${upiId}, ₹${upiAmount || cartTotal})`;
+      if (paymentMethod === "NETBANKING") displayMethodName = `Net Banking (${selectedBank} Bank - Acc: ${bankAccountNo}, IFSC: ${ifscCode}, ₹${netbankingAmount || cartTotal})`;
       if (paymentMethod === "COD") displayMethodName = "Cash on Delivery";
 
       const payload = {
@@ -433,8 +445,8 @@ export default function Payment() {
                       <input
                         type="text"
                         className="premium-input-box"
-                        placeholder="4278"
-                        value={cardAmount}
+                        placeholder={cartTotal ? String(cartTotal) : "0"}
+                        value={cardAmount || (cartTotal ? String(cartTotal) : "")}
                         onChange={(e) => setCardAmount(e.target.value)}
                         required
                       />
@@ -478,8 +490,8 @@ export default function Payment() {
                       <input
                         type="text"
                         className="premium-input-box"
-                        placeholder="4278"
-                        value={upiAmount}
+                        placeholder={cartTotal ? String(cartTotal) : "0"}
+                        value={upiAmount || (cartTotal ? String(cartTotal) : "")}
                         onChange={(e) => setUpiAmount(e.target.value)}
                         required
                       />
@@ -536,8 +548,8 @@ export default function Payment() {
                         <input
                           type="text"
                           className="premium-input-box"
-                          placeholder="4278"
-                          value={netbankingAmount}
+                          placeholder={cartTotal ? String(cartTotal) : "0"}
+                          value={netbankingAmount || (cartTotal ? String(cartTotal) : "")}
                           onChange={(e) => setNetbankingAmount(e.target.value)}
                           required
                         />
