@@ -44,11 +44,12 @@ private String description;
 @Column(columnDefinition = "TEXT")
 private String specifications;// JSON string or text block of technical details
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id")
     private Category category;
 
-    @ElementCollection(fetch = FetchType.EAGER)
+    @ElementCollection(fetch = FetchType.LAZY)
+    @org.hibernate.annotations.BatchSize(size = 20)
     @CollectionTable(name = "product_images", joinColumns = @JoinColumn(name = "product_id"))
     @Column(name = "image_url")
     private List<String> galleryImages = new ArrayList<>();

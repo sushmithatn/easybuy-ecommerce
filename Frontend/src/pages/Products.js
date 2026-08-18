@@ -19,15 +19,13 @@ export default function Products() {
   const [totalPages, setTotalPages] = useState(0);
   const [totalElements, setTotalElements] = useState(0);
 
-  // Filter states
-  const [selectedCategory, setSelectedCategory] = useState(searchParams.get("categoryId") || "");
-  const [searchQuery, setSearchQuery] = useState(searchParams.get("search") || "");
-  const [priceRange, setPriceRange] = useState(searchParams.get("maxPrice") || "");
-  const [sortBy, setSortBy] = useState(searchParams.get("sortBy") || "id");
-  const [sortDir, setSortDir] = useState(searchParams.get("sortDir") || "desc");
-  const [currentPage, setCurrentPage] = useState(parseInt(searchParams.get("page")) || 0);
-
-
+  // Derived filter state directly from URL searchParams (single source of truth)
+  const selectedCategory = searchParams.get("categoryId") || "";
+  const searchQuery = searchParams.get("search") || "";
+  const priceRange = searchParams.get("maxPrice") || "";
+  const sortBy = searchParams.get("sortBy") || "id";
+  const sortDir = searchParams.get("sortDir") || "desc";
+  const currentPage = parseInt(searchParams.get("page") || "0", 10);
 
   // Mobile sidebar filter toggle
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -38,7 +36,7 @@ export default function Products() {
 
   const token = localStorage.getItem("token");
 
-  // Fetch Categories
+  // Fetch Categories once on mount
   useEffect(() => {
     axios.get(`${API_URL}/api/categories`)
       .then(res => setCategories(Array.isArray(res.data) ? res.data : []))
@@ -48,28 +46,19 @@ export default function Products() {
       });
   }, []);
 
-  // Sync state with URL params
+  // Fetch Products whenever searchParams change (Single source of truth, 1 request per change)
   useEffect(() => {
-    setSelectedCategory(searchParams.get("categoryId") || "");
-    setSearchQuery(searchParams.get("search") || "");
-    setPriceRange(searchParams.get("maxPrice") || "");
-    setCurrentPage(parseInt(searchParams.get("page")) || 0);
-  }, [searchParams]);
-
-
-  // Load Products
-  const loadProducts = useCallback(() => {
+    let isMounted = true;
     setLoading(true);
 
     let url = `${API_URL}/api/products?page=${currentPage}&size=12&sortBy=${sortBy}&direction=${sortDir}`;
-
     if (selectedCategory) url += `&categoryId=${selectedCategory}`;
     if (searchQuery) url += `&search=${encodeURIComponent(searchQuery)}`;
     if (priceRange && priceRange !== "") url += `&maxPrice=${priceRange}`;
 
-
     axios.get(url)
       .then((res) => {
+        if (!isMounted) return;
         const prodData = Array.isArray(res.data?.content) 
           ? res.data.content 
           : (Array.isArray(res.data) ? res.data : []);
@@ -78,31 +67,30 @@ export default function Products() {
         setTotalElements(res.data?.totalElements || prodData.length);
       })
       .catch((err) => {
+        if (!isMounted) return;
         console.error("Error loading products:", err);
         setProducts([]);
       })
-      .finally(() => setLoading(false));
+      .finally(() => {
+        if (isMounted) setLoading(false);
+      });
 
-  }, [currentPage, selectedCategory, searchQuery, priceRange, sortBy, sortDir]);
-
-  useEffect(() => {
-    loadProducts();
-  }, [loadProducts]);
+    return () => { isMounted = false; };
+  }, [searchParams, currentPage, selectedCategory, searchQuery, priceRange, sortBy, sortDir]);
 
   const handleCategorySelect = (id) => {
-    setSelectedCategory(id);
-    setCurrentPage(0);
-    setSearchParams({
-      ...Object.fromEntries(searchParams),
-      categoryId: id,
-      page: 0
-    });
+    const newParams = Object.fromEntries(searchParams);
+    if (id) {
+      newParams.categoryId = id;
+    } else {
+      delete newParams.categoryId;
+    }
+    newParams.page = 0;
+    setSearchParams(newParams);
   };
 
   const handlePriceChange = (e) => {
     const val = e.target.value;
-    setPriceRange(val);
-    setCurrentPage(0);
     const newParams = Object.fromEntries(searchParams);
     if (val) {
       newParams.maxPrice = val;
@@ -114,27 +102,24 @@ export default function Products() {
   };
 
   const clearPriceFilter = () => {
-    setPriceRange("");
-    setCurrentPage(0);
     const newParams = Object.fromEntries(searchParams);
     delete newParams.maxPrice;
     newParams.page = 0;
     setSearchParams(newParams);
   };
 
-
   const handleSortChange = (e) => {
     const [field, dir] = e.target.value.split("-");
-    setSortBy(field);
-    setSortDir(dir);
+    const newParams = Object.fromEntries(searchParams);
+    newParams.sortBy = field;
+    newParams.sortDir = dir;
+    setSearchParams(newParams);
   };
 
   const handlePageChange = (pageNo) => {
-    setCurrentPage(pageNo);
-    setSearchParams({
-      ...Object.fromEntries(searchParams),
-      page: pageNo
-    });
+    const newParams = Object.fromEntries(searchParams);
+    newParams.page = pageNo;
+    setSearchParams(newParams);
   };
 
   const handleQuickView = (e, product) => {

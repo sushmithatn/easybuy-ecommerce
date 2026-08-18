@@ -31,4 +31,6 @@ public class CheckoutRequest {
     private String shippingPhone;
 
     private String couponCode; // Optional
+
+    private Double amount; // Optional explicit total amount paid from payment form
 }

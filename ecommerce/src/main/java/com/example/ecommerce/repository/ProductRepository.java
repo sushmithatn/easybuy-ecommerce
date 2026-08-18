@@ -16,7 +16,7 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
         FROM products p
         WHERE (:categoryId IS NULL OR p.category_id = :categoryId)
         AND (
-            :search IS NULL
+            :search IS NULL OR :search = ''
             OR LOWER(p.name) LIKE LOWER(CONCAT('%', CAST(:search AS TEXT), '%'))
             OR LOWER(p.brand) LIKE LOWER(CONCAT('%', CAST(:search AS TEXT), '%'))
             OR LOWER(p.description) LIKE LOWER(CONCAT('%', CAST(:search AS TEXT), '%'))
@@ -29,7 +29,7 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
         FROM products p
         WHERE (:categoryId IS NULL OR p.category_id = :categoryId)
         AND (
-            :search IS NULL
+            :search IS NULL OR :search = ''
             OR LOWER(p.name) LIKE LOWER(CONCAT('%', CAST(:search AS TEXT), '%'))
             OR LOWER(p.brand) LIKE LOWER(CONCAT('%', CAST(:search AS TEXT), '%'))
             OR LOWER(p.description) LIKE LOWER(CONCAT('%', CAST(:search AS TEXT), '%'))
