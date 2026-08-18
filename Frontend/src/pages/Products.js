@@ -372,13 +372,7 @@ export default function Products() {
               <div style={{ marginTop: '16px', display: 'flex', gap: '12px', justifyContent: 'center' }}>
                 <button 
                   className="btn-premium" 
-                  onClick={() => {
-                    setSelectedCategory("");
-                    setSearchQuery("");
-                    setPriceRange("");
-                    setSearchParams({});
-                    loadProducts();
-                  }}
+                  onClick={() => setSearchParams({})}
                 >
                   Reset Filters & Reload
                 </button>
