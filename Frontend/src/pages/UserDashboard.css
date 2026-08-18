@@ -564,6 +564,7 @@
   
   .dashboard-sidebar {
     width: 100%;
+    padding: 20px 16px;
   }
   
   .addresses-section-grid {
@@ -576,5 +577,34 @@
     border-bottom: 1px solid var(--border-color);
     padding-right: 0;
     padding-bottom: 30px;
+  }
+}
+
+@media (max-width: 600px) {
+  .sidebar-nav-links {
+    flex-direction: row;
+    overflow-x: auto;
+    white-space: nowrap;
+    padding-bottom: 4px;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .sidebar-nav-links li {
+    padding: 10px 14px;
+    font-size: 13px;
+  }
+
+  .dashboard-card {
+    padding: 20px 16px;
+  }
+
+  .order-item-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .order-items-grid {
+    grid-template-columns: 1fr;
   }
 }

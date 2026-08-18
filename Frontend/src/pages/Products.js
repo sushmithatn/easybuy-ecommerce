@@ -209,6 +209,10 @@ export default function Products() {
     <div className="catalog-wrapper">
       <Navbar />
 
+      <div 
+        className={`drawer-backdrop ${sidebarOpen ? "active" : ""}`} 
+        onClick={() => setSidebarOpen(false)} 
+      />
       <div className="catalog-container">
         {/* Mobile Filter Toggle */}
         <div className="mobile-filter-bar">

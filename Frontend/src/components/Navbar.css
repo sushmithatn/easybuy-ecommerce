@@ -301,18 +301,19 @@
 
   .navbar-links {
     position: fixed;
-    top: 73px;
+    top: 0;
     right: -100%;
     width: 280px;
-    height: calc(100vh - 73px);
+    height: 100vh;
     background: var(--bg-secondary);
     border-left: 1px solid var(--border-color);
     flex-direction: column;
     align-items: flex-start;
-    padding: 30px 24px;
+    padding: 80px 24px 30px;
     gap: 16px;
-    transition: right 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    transition: right 0.35s cubic-bezier(0.16, 1, 0.3, 1);
     box-shadow: var(--shadow-lg);
+    z-index: 105;
   }
 
   .navbar-links.active {
@@ -339,19 +340,20 @@
     order: 3;
     width: 100%;
     max-width: none;
+    margin-top: 6px;
   }
 
   .navbar-container {
     flex-wrap: wrap;
+    gap: 12px;
   }
 
   .navbar {
     padding: 10px 0;
   }
-  
-  .navbar-links {
-    top: 124px;
-    height: calc(100vh - 124px);
+
+  .suggestion-name {
+    max-width: 200px;
   }
 }
 

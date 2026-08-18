@@ -596,10 +596,11 @@
     left: -100%;
     width: 300px;
     height: 100vh;
+    overflow-y: auto;
     background-color: var(--bg-secondary);
     border-right: 1px solid var(--border-color);
     padding: 30px 24px;
-    transition: left 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    transition: left 0.35s cubic-bezier(0.16, 1, 0.3, 1);
     z-index: 150;
     box-shadow: var(--shadow-lg);
   }
@@ -656,6 +657,56 @@
 }
 
 @media (max-width: 600px) {
+  .catalog-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+
+  .catalog-product-card {
+    border-radius: var(--border-radius-md);
+  }
+
+  .card-image-box {
+    height: 160px;
+    padding: 6px;
+  }
+
+  .card-content-box {
+    padding: 12px;
+    gap: 6px;
+  }
+
+  .card-content-box h3 {
+    font-size: 13.5px;
+    min-height: 38px;
+  }
+
+  .card-price-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .card-price-row .price {
+    font-size: 15px;
+  }
+
+  .card-actions-group {
+    width: 100%;
+    gap: 4px;
+  }
+
+  .quick-add-btn, .quick-buy-btn {
+    flex: 1;
+    padding: 6px 4px;
+    font-size: 10px;
+    text-align: center;
+  }
+
+  .card-floating-actions {
+    display: none; /* Hide hover floating overlay on touch screens */
+  }
+
   .quickview-layout {
     grid-template-columns: 1fr;
     gap: 20px;
@@ -663,5 +714,11 @@
 
   .quickview-img-box {
     height: 220px;
+  }
+}
+
+@media (max-width: 380px) {
+  .catalog-grid {
+    grid-template-columns: 1fr;
   }
 }

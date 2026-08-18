@@ -190,3 +190,13 @@
   border: 1.5px solid var(--bg-secondary);
   box-shadow: 0 2px 4px rgba(0,0,0,0.15);
 }
+
+@media (max-width: 900px) {
+  .admin-orders-container {
+    padding: 20px 16px;
+  }
+
+  .orders-list-panel {
+    padding: 20px 16px;
+  }
+}

@@ -117,94 +117,100 @@ const wishlistRes = await axios.get(`${API_URL}/api/wishlist/count`, {
   };
 
   return (
-    <nav className="navbar">
-      <div className="navbar-container">
-        {/* Logo */}
-        <div className="navbar-brand" onClick={() => navigate("/products")}>
-          <img src="/logo.png" alt="easybuy Logo" className="brand-logo-img" />
-          <span className="brand-name">easybuy</span>
-        </div>
+    <>
+      <div 
+        className={`drawer-backdrop ${menuOpen ? "active" : ""}`} 
+        onClick={() => setMenuOpen(false)} 
+      />
+      <nav className="navbar">
+        <div className="navbar-container">
+          {/* Logo */}
+          <div className="navbar-brand" onClick={() => navigate("/products")}>
+            <img src="/logo.png" alt="easybuy Logo" className="brand-logo-img" />
+            <span className="brand-name">easybuy</span>
+          </div>
 
-        {/* Search Bar */}
-        <form className="navbar-search" onSubmit={handleSearchSubmit} ref={suggestionsRef}>
-          <input
-            type="text"
-            placeholder="Search products, brands, categories..."
-            value={searchQuery}
-            onChange={(e) => {
-              setSearchQuery(e.target.value);
-              setShowSuggestions(true);
-            }}
-            onFocus={() => setShowSuggestions(true)}
-          />
-          <button type="submit" className="search-btn">
-            <FaSearch />
-          </button>
-
-          {/* Autocomplete Dropdown */}
-          {showSuggestions && suggestions.length > 0 && (
-            <ul className="search-suggestions">
-              {suggestions.map((p) => (
-                <li key={p.id} onClick={() => handleSuggestionClick(p.id)}>
-                  <img src={formatImageUrl(p.imageUrl)} alt={p.name} className="suggestion-img" />
-                  <div className="suggestion-info">
-
-                    <span className="suggestion-name">{p.name}</span>
-                    <span className="suggestion-price">₹{p.price}</span>
-                  </div>
-                </li>
-              ))}
-            </ul>
-          )}
-        </form>
-
-        {/* Hamburger Menu Toggle */}
-        <button className="mobile-menu-btn" onClick={() => setMenuOpen(!menuOpen)}>
-          {menuOpen ? <FaTimes /> : <FaBars />}
-        </button>
-
-        {/* Navigation Items */}
-        <div className={`navbar-links ${menuOpen ? "active" : ""}`}>
-          <NavLink to="/products" className={({ isActive }) => isActive ? "nav-item active" : "nav-item"} onClick={() => setMenuOpen(false)}>
-            <FaHome className="nav-icon" /> Shop
-          </NavLink>
-
-          <NavLink to="/cart" className={({ isActive }) => isActive ? "nav-item navbar-icon active" : "nav-item navbar-icon"} onClick={() => setMenuOpen(false)}>
-            <FaShoppingCart className="nav-icon" /> Cart
-            {cartCount > 0 && <span className="nav-badge animate-fade">{cartCount}</span>}
-          </NavLink>
-
-          <NavLink to="/wishlist" className={({ isActive }) => isActive ? "nav-item navbar-icon active" : "nav-item navbar-icon"} onClick={() => setMenuOpen(false)}>
-            <FaHeart className="nav-icon" /> Wishlist
-            {wishlistCount > 0 && <span className="nav-badge animate-fade">{wishlistCount}</span>}
-          </NavLink>
-
-          <NavLink to="/orders" className={({ isActive }) => isActive ? "nav-item active" : "nav-item"} onClick={() => setMenuOpen(false)}>
-            <FaBox className="nav-icon" /> Orders
-          </NavLink>
-
-          {/* Theme Toggle in Menu */}
-          <button className="navbar-theme-btn" onClick={toggleTheme} title="Toggle Theme">
-            {theme === "light" ? <FaMoon /> : <FaSun />}
-          </button>
-
-          {/* User Profile / Logout */}
-          {token ? (
-            <div className="nav-user-section">
-              <span className="user-greeting" onClick={() => navigate("/dashboard")}>
-                Hi, <b>{username}</b>
-              </span>
-              <button className="logout-btn" onClick={logout} title="Logout">
-                <FaSignOutAlt />
-              </button>
-            </div>
-          ) : (
-            <button className="login-nav-btn" onClick={() => { navigate("/login"); setMenuOpen(false); }}>
-              Login
+          {/* Search Bar */}
+          <form className="navbar-search" onSubmit={handleSearchSubmit} ref={suggestionsRef}>
+            <input
+              type="text"
+              placeholder="Search products, brands, categories..."
+              value={searchQuery}
+              onChange={(e) => {
+                setSearchQuery(e.target.value);
+                setShowSuggestions(true);
+              }}
+              onFocus={() => setShowSuggestions(true)}
+            />
+            <button type="submit" className="search-btn">
+              <FaSearch />
             </button>
-          )}
+
+            {/* Autocomplete Dropdown */}
+            {showSuggestions && suggestions.length > 0 && (
+              <ul className="search-suggestions">
+                {suggestions.map((p) => (
+                  <li key={p.id} onClick={() => handleSuggestionClick(p.id)}>
+                    <img src={formatImageUrl(p.imageUrl)} alt={p.name} className="suggestion-img" />
+                    <div className="suggestion-info">
+
+                      <span className="suggestion-name">{p.name}</span>
+                      <span className="suggestion-price">₹{p.price}</span>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </form>
+
+          {/* Hamburger Menu Toggle */}
+          <button className="mobile-menu-btn" onClick={() => setMenuOpen(!menuOpen)}>
+            {menuOpen ? <FaTimes /> : <FaBars />}
+          </button>
+
+          {/* Navigation Items */}
+          <div className={`navbar-links ${menuOpen ? "active" : ""}`}>
+            <NavLink to="/products" className={({ isActive }) => isActive ? "nav-item active" : "nav-item"} onClick={() => setMenuOpen(false)}>
+              <FaHome className="nav-icon" /> Shop
+            </NavLink>
+
+            <NavLink to="/cart" className={({ isActive }) => isActive ? "nav-item navbar-icon active" : "nav-item navbar-icon"} onClick={() => setMenuOpen(false)}>
+              <FaShoppingCart className="nav-icon" /> Cart
+              {cartCount > 0 && <span className="nav-badge animate-fade">{cartCount}</span>}
+            </NavLink>
+
+            <NavLink to="/wishlist" className={({ isActive }) => isActive ? "nav-item navbar-icon active" : "nav-item navbar-icon"} onClick={() => setMenuOpen(false)}>
+              <FaHeart className="nav-icon" /> Wishlist
+              {wishlistCount > 0 && <span className="nav-badge animate-fade">{wishlistCount}</span>}
+            </NavLink>
+
+            <NavLink to="/orders" className={({ isActive }) => isActive ? "nav-item active" : "nav-item"} onClick={() => setMenuOpen(false)}>
+              <FaBox className="nav-icon" /> Orders
+            </NavLink>
+
+            {/* Theme Toggle in Menu */}
+            <button className="navbar-theme-btn" onClick={toggleTheme} title="Toggle Theme">
+              {theme === "light" ? <FaMoon /> : <FaSun />}
+            </button>
+
+            {/* User Profile / Logout */}
+            {token ? (
+              <div className="nav-user-section">
+                <span className="user-greeting" onClick={() => { navigate("/dashboard"); setMenuOpen(false); }}>
+                  Hi, <b>{username}</b>
+                </span>
+                <button className="logout-btn" onClick={() => { logout(); setMenuOpen(false); }} title="Logout">
+                  <FaSignOutAlt />
+                </button>
+              </div>
+            ) : (
+              <button className="login-nav-btn" onClick={() => { navigate("/login"); setMenuOpen(false); }}>
+                Login
+              </button>
+            )}
+          </div>
         </div>
-      </div>
-    </nav>
+      </nav>
+    </>
   );
 }

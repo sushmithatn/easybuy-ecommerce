@@ -126,7 +126,16 @@
 }
 
 @media (max-width: 900px) {
+  .admin-categories-container {
+    padding: 20px 16px;
+  }
+
   .categories-layout {
     grid-template-columns: 1fr;
+    gap: 24px;
+  }
+
+  .admin-category-form, .categories-list-panel {
+    padding: 20px 16px;
   }
 }

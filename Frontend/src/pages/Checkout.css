@@ -526,20 +526,48 @@
 }
 
 @media (max-width: 900px) {
+  .checkout-container {
+    padding: 20px 16px;
+  }
+
   .checkout-layout {
     grid-template-columns: 1fr;
+    gap: 24px;
   }
 }
 
 @media (max-width: 600px) {
   .checkout-stepper {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 12px;
+    flex-direction: row;
+    justify-content: space-around;
+    padding: 12px 10px;
+    gap: 8px;
+  }
+
+  .step-item span {
+    display: none; /* Hide text label on mobile, show step number badge */
   }
   
   .step-arrow {
-    display: none;
+    font-size: 10px;
+  }
+
+  .checkout-main-form, .checkout-summary-panel {
+    padding: 20px 16px;
+  }
+
+  .credit-card-mockup {
+    height: 160px;
+    padding: 16px;
+  }
+
+  .card-number-display {
+    font-size: 16px;
+    letter-spacing: 1px;
+  }
+
+  .card-holder-display, .card-expiry-display {
+    font-size: 12px;
   }
   
   .payment-method-selector {

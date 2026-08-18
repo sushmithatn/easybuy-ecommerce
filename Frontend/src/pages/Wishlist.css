@@ -192,6 +192,50 @@
 }
 
 @media (max-width: 600px) {
+  .wishlist-container {
+    padding: 20px 16px;
+  }
+
+  .wishlist-page-title {
+    font-size: 22px;
+    margin-bottom: 20px;
+  }
+
+  .wishlist-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+
+  .wishlist-img-box {
+    height: 160px;
+    padding: 6px;
+  }
+
+  .wishlist-info {
+    padding: 12px;
+  }
+
+  .wishlist-info h3 {
+    font-size: 13px;
+    min-height: 34px;
+  }
+
+  .wishlist-price {
+    font-size: 15px;
+  }
+
+  .wishlist-card-actions {
+    padding: 10px;
+    gap: 6px;
+  }
+
+  .wishlist-add-cart, .wishlist-buy {
+    font-size: 10px;
+    padding: 6px 4px;
+  }
+}
+
+@media (max-width: 380px) {
   .wishlist-grid {
     grid-template-columns: 1fr;
   }

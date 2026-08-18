@@ -229,8 +229,30 @@
 }
 
 @media (max-width: 550px) {
+  .payment-page-container {
+    margin: 16px auto;
+    padding: 0 12px;
+  }
+
+  .payment-content-card {
+    padding: 20px 16px;
+  }
+
   .payment-methods-grid {
     grid-template-columns: repeat(2, 1fr);
+  }
+
+  .input-fields-row {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .success-actions-row {
+    flex-direction: column;
+  }
+
+  .step-node span {
+    display: none;
   }
 }
 

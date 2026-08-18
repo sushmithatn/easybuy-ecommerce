@@ -181,8 +181,17 @@
 }
 
 @media (max-width: 1024px) {
+  .admin-products-container {
+    padding: 20px 16px;
+  }
+
   .products-crud-layout {
     grid-template-columns: 1fr;
+    gap: 24px;
+  }
+
+  .admin-product-form, .products-list-panel {
+    padding: 20px 16px;
   }
 }
 
