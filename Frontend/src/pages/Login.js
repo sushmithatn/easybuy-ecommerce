@@ -82,8 +82,8 @@ export default function Login() {
 
       <div className="auth-container">
         <div className="auth-brand">
-          <img src="/logo.png" alt="easybuy Logo" className="logo-img" />
-          <h1>easybuy</h1>
+          <img src="/logo.png" alt="EasyBuys Logo" className="logo-img" />
+          <h1>EasyBuys</h1>
           <p>Your Premium Shopping Destination</p>
         </div>
 

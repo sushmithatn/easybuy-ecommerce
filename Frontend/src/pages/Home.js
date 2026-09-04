@@ -211,8 +211,8 @@ axios.get(`${API_URL}/api/products?size=4`)
       <footer className="footer">
         <div className="footer-container">
           <div className="footer-col brand-col">
-            <img src="/logo.png" alt="easybuy Logo" style={{height: "120px", width: "auto", objectFit: "contain", alignSelf: "center", marginBottom: "12px", display: "block"}} />
-            <p>easybuy is a premium, secure, and modern e-commerce marketplace dedicated to providing premium quality accessories and tech items.</p>
+            <img src="/logo.png" alt="EasyBuys Logo" style={{height: "100px", width: "auto", objectFit: "contain", alignSelf: "center", marginBottom: "12px", display: "block"}} />
+            <p>EasyBuys is a premium, secure, and modern e-commerce marketplace dedicated to providing premium quality accessories and tech items.</p>
             <div className="payment-badges">
               <span>💳 Visa</span>
               <span>💳 Mastercard</span>

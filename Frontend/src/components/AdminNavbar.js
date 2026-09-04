@@ -19,8 +19,8 @@ export default function AdminNavbar() {
   return (
     <nav className="admin-navbar">
       <div className="admin-logo" onClick={() => navigate("/admin")}>
-        <img src="/logo.png" alt="easybuy Logo" className="logo-img" />
-        <span className="logo-text">easybuy</span>
+        <img src="/logo.png" alt="EasyBuys Logo" className="logo-img" />
+        <span className="logo-text">EasyBuys</span>
         <span className="logo-badge">ADMIN</span>
       </div>
 

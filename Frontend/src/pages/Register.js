@@ -90,8 +90,8 @@ export default function Register() {
 
       <div className="auth-container register-container">
         <div className="auth-brand">
-          <img src="/logo.png" alt="easybuy Logo" className="logo-img" />
-          <h1>easybuy</h1>
+          <img src="/logo.png" alt="EasyBuys Logo" className="logo-img" />
+          <h1>EasyBuys</h1>
           <p>Join our premium e-commerce marketplace</p>
         </div>
 

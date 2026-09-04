@@ -126,8 +126,8 @@ const wishlistRes = await axios.get(`${API_URL}/api/wishlist/count`, {
         <div className="navbar-container">
           {/* Logo */}
           <div className="navbar-brand" onClick={() => navigate("/products")}>
-            <img src="/logo.png" alt="easybuy Logo" className="brand-logo-img" />
-            <span className="brand-name">easybuy</span>
+            <img src="/logo.png" alt="EasyBuys Logo" className="brand-logo-img" />
+            <span className="brand-name">EasyBuys</span>
           </div>
 
           {/* Search Bar */}
