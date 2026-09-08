@@ -12,32 +12,30 @@ import org.springframework.stereotype.Repository;
 public interface ProductRepository extends JpaRepository<Product, Long> {
 
     @Query(value = """
-        SELECT *
-        FROM products p
-        WHERE (:categoryId IS NULL OR p.category_id = :categoryId)
+        SELECT p FROM Product p
+        LEFT JOIN FETCH p.category
+        WHERE (:categoryId IS NULL OR p.category.id = :categoryId)
         AND (
             :search IS NULL OR :search = ''
-            OR LOWER(p.name) LIKE LOWER(CONCAT('%', CAST(:search AS TEXT), '%'))
-            OR LOWER(p.brand) LIKE LOWER(CONCAT('%', CAST(:search AS TEXT), '%'))
-            OR LOWER(p.description) LIKE LOWER(CONCAT('%', CAST(:search AS TEXT), '%'))
+            OR LOWER(p.name) LIKE LOWER(CONCAT('%', LOWER(:search), '%'))
+            OR LOWER(p.brand) LIKE LOWER(CONCAT('%', LOWER(:search), '%'))
+            OR LOWER(p.description) LIKE LOWER(CONCAT('%', LOWER(:search), '%'))
         )
         AND (:minPrice IS NULL OR p.price >= :minPrice)
         AND (:maxPrice IS NULL OR p.price <= :maxPrice)
         """,
         countQuery = """
-        SELECT COUNT(*)
-        FROM products p
-        WHERE (:categoryId IS NULL OR p.category_id = :categoryId)
+        SELECT COUNT(p) FROM Product p
+        WHERE (:categoryId IS NULL OR p.category.id = :categoryId)
         AND (
             :search IS NULL OR :search = ''
-            OR LOWER(p.name) LIKE LOWER(CONCAT('%', CAST(:search AS TEXT), '%'))
-            OR LOWER(p.brand) LIKE LOWER(CONCAT('%', CAST(:search AS TEXT), '%'))
-            OR LOWER(p.description) LIKE LOWER(CONCAT('%', CAST(:search AS TEXT), '%'))
+            OR LOWER(p.name) LIKE LOWER(CONCAT('%', LOWER(:search), '%'))
+            OR LOWER(p.brand) LIKE LOWER(CONCAT('%', LOWER(:search), '%'))
+            OR LOWER(p.description) LIKE LOWER(CONCAT('%', LOWER(:search), '%'))
         )
         AND (:minPrice IS NULL OR p.price >= :minPrice)
         AND (:maxPrice IS NULL OR p.price <= :maxPrice)
-        """,
-        nativeQuery = true)
+        """)
     Page<Product> filterProducts(
             @Param("categoryId") Long categoryId,
             @Param("search") String search,

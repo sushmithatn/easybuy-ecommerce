@@ -70,6 +70,8 @@ export default function Products() {
         if (!isMounted) return;
         console.error("Error loading products:", err);
         setProducts([]);
+        setTotalPages(0);
+        setTotalElements(0);
       })
       .finally(() => {
         if (isMounted) setLoading(false);
@@ -80,7 +82,7 @@ export default function Products() {
 
   const handleCategorySelect = (id) => {
     const newParams = Object.fromEntries(searchParams);
-    if (id) {
+    if (id !== undefined && id !== null && id !== "") {
       newParams.categoryId = id;
     } else {
       delete newParams.categoryId;

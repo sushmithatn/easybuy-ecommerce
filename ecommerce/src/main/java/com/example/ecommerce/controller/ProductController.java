@@ -62,15 +62,15 @@ public class ProductController {
         // Adjust empty or whitespace search terms
         String searchTerm = (search != null && !search.trim().isEmpty()) ? search.trim() : null;
 
-        // Map camelCase fields to snake_case DB column names for native SQL sorting
-        String dbSortBy = sortBy;
-        if ("averageRating".equalsIgnoreCase(sortBy)) {
-            dbSortBy = "average_rating";
-        } else if ("discountPercentage".equalsIgnoreCase(sortBy)) {
-            dbSortBy = "discount_percentage";
+        // Map sort fields to Java entity property names for JPQL sorting
+        String entitySortBy = sortBy;
+        if ("average_rating".equalsIgnoreCase(sortBy) || "averageRating".equalsIgnoreCase(sortBy)) {
+            entitySortBy = "averageRating";
+        } else if ("discount_percentage".equalsIgnoreCase(sortBy) || "discountPercentage".equalsIgnoreCase(sortBy)) {
+            entitySortBy = "discountPercentage";
         }
 
-        Sort sort = direction.equalsIgnoreCase("desc") ? Sort.by(dbSortBy).descending() : Sort.by(dbSortBy).ascending();
+        Sort sort = direction.equalsIgnoreCase("desc") ? Sort.by(entitySortBy).descending() : Sort.by(entitySortBy).ascending();
         Pageable pageable = PageRequest.of(page, size, sort);
 
         Page<Product> productsPage = productRepository.filterProducts(
