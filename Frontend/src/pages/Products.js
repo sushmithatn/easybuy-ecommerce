@@ -1,7 +1,7 @@
 import { useEffect, useState, useCallback } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import axios from "axios";
-import { FaHeart, FaStar, FaEye, FaFilter, FaTimes } from "react-icons/fa";
+import { FaHeart, FaStar, FaEye, FaFilter, FaTimes, FaCamera, FaMicrophone } from "react-icons/fa";
 import Navbar from "../components/Navbar";
 import "./Products.css";
 import { API_URL } from "../config.js";
@@ -56,12 +56,38 @@ export default function Products() {
     if (searchQuery) url += `&search=${encodeURIComponent(searchQuery)}`;
     if (priceRange && priceRange !== "") url += `&maxPrice=${priceRange}`;
 
-    axios.get(url)
+    const fetchWithRetry = async (targetUrl, retries = 2, delayMs = 1500) => {
+      for (let attempt = 0; attempt <= retries; attempt++) {
+        try {
+          const res = await axios.get(targetUrl);
+          return res;
+        } catch (err) {
+          if (attempt === retries || !isMounted) throw err;
+          await new Promise((r) => setTimeout(r, delayMs));
+        }
+      }
+    };
+
+    fetchWithRetry(url)
       .then((res) => {
         if (!isMounted) return;
         const prodData = Array.isArray(res.data?.content) 
           ? res.data.content 
           : (Array.isArray(res.data) ? res.data : []);
+
+        // Fallback only for text/voice/image search queries — NOT for category or price filters
+        if (prodData.length === 0 && searchQuery && !selectedCategory && !priceRange) {
+          return axios.get(`${API_URL}/api/products?page=0&size=12`).then((fallbackRes) => {
+            if (!isMounted) return;
+            const fallbackData = Array.isArray(fallbackRes.data?.content)
+              ? fallbackRes.data.content
+              : (Array.isArray(fallbackRes.data) ? fallbackRes.data : []);
+            setProducts(fallbackData);
+            setTotalPages(fallbackRes.data?.totalPages || 0);
+            setTotalElements(fallbackRes.data?.totalElements || fallbackData.length);
+          });
+        }
+
         setProducts(prodData);
         setTotalPages(res.data?.totalPages || 0);
         setTotalElements(res.data?.totalElements || prodData.length);
@@ -87,6 +113,10 @@ export default function Products() {
     } else {
       delete newParams.categoryId;
     }
+    // Clear any leftover search/voice/image filters so category filter works cleanly
+    delete newParams.search;
+    delete newParams.voiceSearch;
+    delete newParams.imageSearch;
     newParams.page = 0;
     setSearchParams(newParams);
   };
@@ -273,6 +303,46 @@ export default function Products() {
 
         {/* Catalog Main Content */}
         <main className="catalog-main">
+          {searchParams.get("imageSearch") === "true" && (
+            <div className="visual-search-banner">
+              <div className="visual-search-info">
+                <FaCamera className="visual-banner-icon" />
+                <span>Camera Visual Search for: <strong>"{searchQuery || 'Detected Image'}"</strong></span>
+              </div>
+              <button
+                className="clear-visual-search-btn"
+                onClick={() => {
+                  const newParams = Object.fromEntries(searchParams);
+                  delete newParams.imageSearch;
+                  delete newParams.search;
+                  setSearchParams(newParams);
+                }}
+              >
+                <FaTimes /> Clear Image Filter
+              </button>
+            </div>
+          )}
+
+          {searchParams.get("voiceSearch") === "true" && (
+            <div className="visual-search-banner voice-banner">
+              <div className="visual-search-info">
+                <FaMicrophone className="visual-banner-icon voice-icon" />
+                <span>Voice Search for: <strong>"{searchQuery || 'Spoken query'}"</strong></span>
+              </div>
+              <button
+                className="clear-visual-search-btn"
+                onClick={() => {
+                  const newParams = Object.fromEntries(searchParams);
+                  delete newParams.voiceSearch;
+                  delete newParams.search;
+                  setSearchParams(newParams);
+                }}
+              >
+                <FaTimes /> Clear Voice Filter
+              </button>
+            </div>
+          )}
+
           {/* Top Control Bar */}
           <div className="catalog-control-bar">
             <span className="products-count-desk">{totalElements} Products found</span>

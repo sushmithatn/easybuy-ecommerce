@@ -10,6 +10,9 @@ import {
   FaBox,
   FaSignOutAlt,
   FaSearch,
+  FaCamera,
+  FaMicrophone,
+  FaMicrophoneSlash,
   FaBars,
   FaTimes,
   FaSun,
@@ -17,6 +20,7 @@ import {
   FaHome
 } from "react-icons/fa";
 import { ThemeContext } from "../context/ThemeContext";
+import CameraSearchModal from "./CameraSearchModal";
 import "./Navbar.css";
 
 export default function Navbar() {
@@ -25,12 +29,21 @@ export default function Navbar() {
   const [cartCount, setCartCount] = useState(0);
   const [wishlistCount, setWishlistCount] = useState(0);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [isCameraModalOpen, setIsCameraModalOpen] = useState(false);
 
-  // Search autocomplete states
+  // Search autocomplete & Voice Search states
   const [searchQuery, setSearchQuery] = useState("");
   const [suggestions, setSuggestions] = useState([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
+  const [isListening, setIsListening] = useState(false);
+
   const suggestionsRef = useRef(null);
+  const recognitionRef = useRef(null);
+  const searchQueryRef = useRef(searchQuery);
+
+  useEffect(() => {
+    searchQueryRef.current = searchQuery;
+  }, [searchQuery]);
 
   const token = localStorage.getItem("token");
   const username = localStorage.getItem("username");
@@ -116,6 +129,73 @@ const wishlistRes = await axios.get(`${API_URL}/api/wishlist/count`, {
     navigate(`/products/${productId}`);
   };
 
+  const handleVisualSearchResults = ({ detectedTerm }) => {
+    const term = detectedTerm || "Search";
+    setSearchQuery(term);
+    setShowSuggestions(false);
+    navigate(`/products?search=${encodeURIComponent(term)}&imageSearch=true`);
+  };
+
+  const toggleVoiceSearch = () => {
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+    if (!SpeechRecognition) {
+      alert("Voice search is not supported in your browser. Please try Chrome, Edge, or Safari.");
+      return;
+    }
+
+    if (isListening) {
+      if (recognitionRef.current) {
+        recognitionRef.current.stop();
+      }
+      setIsListening(false);
+      return;
+    }
+
+    try {
+      const recognition = new SpeechRecognition();
+      recognition.continuous = false;
+      recognition.interimResults = true;
+      recognition.lang = "en-US";
+
+      recognition.onstart = () => {
+        setIsListening(true);
+      };
+
+      recognition.onresult = (event) => {
+        let transcript = "";
+        for (let i = event.resultIndex; i < event.results.length; i++) {
+          transcript += event.results[i][0].transcript;
+        }
+        setSearchQuery(transcript);
+        setShowSuggestions(true);
+      };
+
+      recognition.onerror = (event) => {
+        console.error("Speech recognition error:", event.error);
+        setIsListening(false);
+        if (event.error === "not-allowed" || event.error === "permission-denied") {
+          alert("Microphone permission denied. Please allow microphone access to search by voice.");
+        }
+      };
+
+      recognition.onend = () => {
+        setIsListening(false);
+        const finalQuery = searchQueryRef.current ? searchQueryRef.current.trim() : "";
+        if (finalQuery) {
+          setShowSuggestions(false);
+          navigate(`/products?search=${encodeURIComponent(finalQuery)}&voiceSearch=true`);
+        }
+      };
+
+      recognitionRef.current = recognition;
+      recognition.start();
+    } catch (err) {
+      console.error("Error starting speech recognition:", err);
+      setIsListening(false);
+    }
+  };
+
   return (
     <>
       <div 
@@ -134,7 +214,8 @@ const wishlistRes = await axios.get(`${API_URL}/api/wishlist/count`, {
           <form className="navbar-search" onSubmit={handleSearchSubmit} ref={suggestionsRef}>
             <input
               type="text"
-              placeholder="Search products, brands, categories..."
+              placeholder={isListening ? "Listening... Speak now 🎙️" : "Search products, brands, categories..."}
+              className={isListening ? "listening-input" : ""}
               value={searchQuery}
               onChange={(e) => {
                 setSearchQuery(e.target.value);
@@ -142,6 +223,25 @@ const wishlistRes = await axios.get(`${API_URL}/api/wishlist/count`, {
               }}
               onFocus={() => setShowSuggestions(true)}
             />
+
+            <button
+              type="button"
+              className={`mic-search-trigger-btn ${isListening ? "listening" : ""}`}
+              onClick={toggleVoiceSearch}
+              title={isListening ? "Stop listening" : "Search by voice / microphone"}
+            >
+              {isListening ? <FaMicrophoneSlash /> : <FaMicrophone />}
+            </button>
+
+            <button
+              type="button"
+              className="camera-search-trigger-btn"
+              onClick={() => setIsCameraModalOpen(true)}
+              title="Search by image or camera photo"
+            >
+              <FaCamera />
+            </button>
+
             <button type="submit" className="search-btn">
               <FaSearch />
             </button>
@@ -162,6 +262,13 @@ const wishlistRes = await axios.get(`${API_URL}/api/wishlist/count`, {
               </ul>
             )}
           </form>
+
+          {/* Camera Search Modal */}
+          <CameraSearchModal
+            isOpen={isCameraModalOpen}
+            onClose={() => setIsCameraModalOpen(false)}
+            onSearchResults={handleVisualSearchResults}
+          />
 
           {/* Hamburger Menu Toggle */}
           <button className="mobile-menu-btn" onClick={() => setMenuOpen(!menuOpen)}>

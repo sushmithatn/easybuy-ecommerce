@@ -16,6 +16,11 @@ import jakarta.validation.Valid;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.example.ecommerce.service.ImageSearchService;
+import org.springframework.http.MediaType;
+import org.springframework.web.multipart.MultipartFile;
+import java.util.Map;
+
 @RestController
 @RequestMapping("/api/products")
 @CrossOrigin(
@@ -32,19 +37,33 @@ public class ProductController {
     private final WishlistRepository wishlistRepository;
     private final ReviewRepository reviewRepository;
     private final OrderItemRepository orderItemRepository;
+    private final ImageSearchService imageSearchService;
 
     public ProductController(ProductRepository productRepository,
                              CategoryRepository categoryRepository,
                              CartRepository cartRepository,
                              WishlistRepository wishlistRepository,
                              ReviewRepository reviewRepository,
-                             OrderItemRepository orderItemRepository) {
+                             OrderItemRepository orderItemRepository,
+                             ImageSearchService imageSearchService) {
         this.productRepository = productRepository;
         this.categoryRepository = categoryRepository;
         this.cartRepository = cartRepository;
         this.wishlistRepository = wishlistRepository;
         this.reviewRepository = reviewRepository;
         this.orderItemRepository = orderItemRepository;
+        this.imageSearchService = imageSearchService;
+    }
+
+    // ✅ PUBLIC CAMERA / IMAGE VISUAL SEARCH
+    @PostMapping(value = "/search-by-image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<Map<String, Object>> searchByImage(
+            @RequestParam("file") MultipartFile file,
+            @RequestParam(value = "hint", required = false) String hint,
+            @RequestParam(value = "visualLabels", required = false) String visualLabels
+    ) {
+        Map<String, Object> result = imageSearchService.searchProductsByImage(file, hint, visualLabels);
+        return ResponseEntity.ok(result);
     }
 
     // ✅ PUBLIC PAGINATED & FILTERED SEARCH
@@ -76,6 +95,23 @@ public class ProductController {
         Page<Product> productsPage = productRepository.filterProducts(
                 categoryId, searchTerm, minPrice, maxPrice, pageable
         );
+
+        // Fallback: Only for text search queries, NOT for category/price filters
+        if (productsPage.isEmpty() && searchTerm != null && !searchTerm.trim().isEmpty()
+                && categoryId == null && minPrice == null && maxPrice == null) {
+            String[] tokens = searchTerm.trim().split("[,\\s]+");
+            String term1 = tokens.length > 0 ? tokens[0] : null;
+            String term2 = tokens.length > 1 ? tokens[1] : null;
+            String term3 = tokens.length > 2 ? tokens[2] : null;
+
+            List<Product> similarList = productRepository.searchSimilarProducts(term1, term2, term3, pageable);
+
+            if (similarList.isEmpty()) {
+                productsPage = productRepository.findAll(pageable);
+            } else {
+                productsPage = new PageImpl<>(similarList, pageable, similarList.size());
+            }
+        }
 
         List<ProductDTO> dtoList = productsPage.getContent().stream()
                 .map(this::convertToDto)

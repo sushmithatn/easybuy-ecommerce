@@ -44,4 +44,37 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
             Pageable pageable
     );
 
+    @Query(value = """
+        SELECT DISTINCT p FROM Product p
+        LEFT JOIN FETCH p.category
+        WHERE (
+            :term1 IS NOT NULL AND (
+                LOWER(p.name) LIKE LOWER(CONCAT('%', :term1, '%'))
+                OR LOWER(p.brand) LIKE LOWER(CONCAT('%', :term1, '%'))
+                OR LOWER(p.description) LIKE LOWER(CONCAT('%', :term1, '%'))
+                OR (p.category IS NOT NULL AND LOWER(p.category.name) LIKE LOWER(CONCAT('%', :term1, '%')))
+            )
+        ) OR (
+            :term2 IS NOT NULL AND (
+                LOWER(p.name) LIKE LOWER(CONCAT('%', :term2, '%'))
+                OR LOWER(p.brand) LIKE LOWER(CONCAT('%', :term2, '%'))
+                OR LOWER(p.description) LIKE LOWER(CONCAT('%', :term2, '%'))
+                OR (p.category IS NOT NULL AND LOWER(p.category.name) LIKE LOWER(CONCAT('%', :term2, '%')))
+            )
+        ) OR (
+            :term3 IS NOT NULL AND (
+                LOWER(p.name) LIKE LOWER(CONCAT('%', :term3, '%'))
+                OR LOWER(p.brand) LIKE LOWER(CONCAT('%', :term3, '%'))
+                OR LOWER(p.description) LIKE LOWER(CONCAT('%', :term3, '%'))
+                OR (p.category IS NOT NULL AND LOWER(p.category.name) LIKE LOWER(CONCAT('%', :term3, '%')))
+            )
+        )
+        """)
+    java.util.List<Product> searchSimilarProducts(
+            @Param("term1") String term1,
+            @Param("term2") String term2,
+            @Param("term3") String term3,
+            Pageable pageable
+    );
+
 }
